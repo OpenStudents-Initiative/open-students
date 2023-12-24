@@ -6,6 +6,7 @@ import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import Typography from '@mui/joy/Typography';
 import { Sheet } from '@mui/joy';
+import { COLORS } from '../styles/colors';
 
 interface Professor {
     name: string;
@@ -93,7 +94,15 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
                     </Sheet>
 
                     <Box sx={{ display: 'flex', gap: 1.5, '& > button': { flex: 1 } }}>
-                        <Button variant="solid" color="primary">
+                        <Button variant="solid" 
+                            sx={{
+                                color: "white",
+                                backgroundColor: COLORS.primary,
+                                '&:hover': {
+                                    backgroundColor: COLORS.dark,
+                                },
+                            }}
+                        >
                             Reseñar a este profesor
                         </Button>
                     </Box>

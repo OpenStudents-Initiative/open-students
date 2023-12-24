@@ -1,48 +1,65 @@
-import React, { useState } from 'react';
-import Container from '@mui/material/Container';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import SearchIcon from '@mui/icons-material/Search';
+import { useEffect, useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { supabase } from "../App";
+import "../styles//SearchBar.css";
 
-export const SearchBar = ({ text }: { text: string }) => {
-    const [searchTerm, setSearchTerm] = useState('');
+interface SearchBarProps {
+    results: Array<{ name: string, id: string }>,
+    setResults: React.Dispatch<React.SetStateAction<{ name: string, id: string }[]>>;
+    setShowResults: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value);
+export const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps ) => {
+
+    const [professorNames, setProfessorNames] = useState([]);
+    const [input, setInput] = useState("");
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    async function fetchData() {
+
+        let { data: professorNames, error } = await supabase
+            .from('professor')
+            .select('name, id')
+
+        console.log(professorNames);
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        setProfessorNames(professorNames);
     };
 
-    const handleSubmit = () => {
-        window.location.href = `/products?search=${searchTerm}`
-        localStorage.setItem("query", searchTerm)
+    useEffect(() => {
+        if (!input) {
+            setResults([]);
+            return;
+        }
+
+        const profs: { name: string, id: string }[] =
+            professorNames.filter(({ name }: { name: string, id: string }) => name.toLowerCase().includes(input.toLowerCase()));
+        setResults(profs);
+
+        setShowResults(results && results.length > 0);
+    }, [input]);
+
+
+    const handleChange = (value: string) => {
+        setInput(value);
     };
 
     return (
-        <Container
-            maxWidth="md"
-            sx={{
-                display: 'flex',
-                width: '80%',
-            }}
-        >
-            <TextField
-                type="search"
-                placeholder={text + '...'}
-                size="small"
-                sx={{
-                    width: '100%',
-                    color: '#495057',
-                }}
-                value={searchTerm}
-                onChange={handleChange}
-                onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && handleSubmit()} // Trigger submit on Enter key
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon style={{ color: '#1B1D1F' }} />
-                        </InputAdornment>
-                    ),
-                }}
+        <div className="input-wrapper">
+            <FaSearch id="search-icon" />
+            <input
+                placeholder="Type to search..."
+                value={input}
+                onChange={(e) => handleChange(e.target.value)}
             />
-        </Container>
+        </div>
     );
 };
