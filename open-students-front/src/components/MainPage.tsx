@@ -3,9 +3,27 @@ import ProfessorCard from "./ProfessorCard"
 import ReviewCard from "./ReviewCard"
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import { useEffect, useState } from "react";
+import { supabase } from '../App.tsx'
 
 
-export default function MainPage() {
+export default function ProfessorPage({ id }: { id: string }) {
+
+    const [professor, setProfessor] = useState([]);
+    const [reviews, setReviews] = useState([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            const data = await getProfessor(id);
+            setProfessor(data);
+
+            const reviews = await getReviews(id);
+            setReviews(reviews);
+        }
+
+        fetchData();
+    }, []);
+
 
     const exampleProfessor = {
         name: "Alvaro Andres Gomez D'Alleman",
@@ -197,3 +215,37 @@ export default function MainPage() {
         </Box>
     );
 };
+
+
+async function getProfessor(id: string) {
+    let { data: professor, error } = await supabase
+        .from('professor')
+        .select("*")
+        .eq('id', id)
+    
+    console.log(professor)
+
+    if (error) {
+        console.error('Error fetching professor:', error);
+        return [];
+    }
+
+    return professor;
+}
+
+
+async function getReviews(id: string) {
+    let { data: reviews, error } = await supabase
+        .from('review')
+        .select("*")
+        .eq('fk_professor', id)
+
+    console.log(reviews)
+
+    if (error) {
+        console.error('Error fetching reviews:', error);
+        return [];
+    }
+
+    return reviews;
+}
