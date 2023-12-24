@@ -1,0 +1,19 @@
+{
+    "footerText": "OpenStudents, una iniciativa de estudiantes para estudiantes",
+    "headerSearch": "Buscar",
+    "headerLogin": "Iniciar sesión",
+    "generalRatingText": "Calificación general:",
+    "difficultyLevelText": "Nivel de dificultad:",
+    "courseGradeText": "Calificación obtenida:",
+    "wouldEnrollAgainText": "Volvería a tomar clase con este profesor:",
+    "semesterText": "Semestre:",
+    "idText": "ID:",
+    "averageRatingText": "Calificación promedio:",
+    "averageStudentCourseGradeText": "Calificación promedio obtenida:",
+
+    "veryDifficult": "Muy difícil",
+    "difficult": "Difícil",
+    "average": "Promedio",
+    "easy": "Fácil",
+    "veryEasy": "Muy fácil"
+}
