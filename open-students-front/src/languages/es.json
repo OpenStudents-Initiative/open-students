@@ -1,19 +1,33 @@
 {
+    "openStudents": "OpenStudents",
+
     "footerText": "OpenStudents, una iniciativa de estudiantes para estudiantes",
-    "headerSearch": "Buscar",
+
     "headerLogin": "Iniciar sesión",
+
+    "loadingProfessor": "Cargando profesor...",
+    "loadingUniversity": "Cargando universidad...",
+    "loadingDependency": "Cargando facultad...",
+
     "generalRatingText": "Calificación general:",
     "difficultyLevelText": "Nivel de dificultad:",
     "courseGradeText": "Calificación obtenida:",
     "wouldEnrollAgainText": "Volvería a tomar clase con este profesor:",
     "semesterText": "Semestre:",
-    "idText": "ID:",
-    "averageRatingText": "Calificación promedio:",
-    "averageStudentCourseGradeText": "Calificación promedio obtenida:",
 
     "veryDifficult": "Muy difícil",
     "difficult": "Difícil",
     "average": "Dificultad promedio",
     "easy": "Fácil",
-    "veryEasy": "Muy fácil"
+    "veryEasy": "Muy fácil",
+
+    "averageRatingText": "Rating promedio:",
+    "averageCourseGradeText": "Calificación promedio obtenida:",
+    "averageDifficultyLevelText": "Nivel de dificultad promedio:",
+    "seeReviewsText": "Ver reseñas",
+
+    "searchProfessors": "Buscar profesores",
+
+    "noReviewsYet": "Aún no hay reseñas para este profesor :(",
+    "beTheFirstReview": "¡Sé el primero en dejar una reseña!"
 }

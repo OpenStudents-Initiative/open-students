@@ -1,5 +1,5 @@
 .results-list {
-    width: 100%;
+    width: 40%;
     background-color: white;
     color: black;
     display: flex;
@@ -9,6 +9,10 @@
     margin-top: 1rem;
     max-height: 300px;
     overflow-y: auto;
-    position: relative;
-  }
-  
+
+    position: absolute;
+    top: 100%;
+    z-index: 1;
+
+    align-self: center;
+}

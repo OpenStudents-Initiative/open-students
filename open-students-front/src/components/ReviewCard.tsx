@@ -9,7 +9,8 @@ import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied
 import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
-import { useIntl } from "react-intl";
+import { useIntl } from 'react-intl';
+
 
 interface Review {
     id: string;
@@ -31,17 +32,7 @@ interface ReviewCardProps {
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
 
-    const {
-        course,
-        code,
-        review: comment,
-        generalRating,
-        difficultyLevel,
-        wouldEnrollAgain,
-    } = review;
-
     const intl = useIntl();
-
     const textConstants = {
         generalRatingText: intl.formatMessage({ id: "generalRatingText" }),
         difficultyLevelText: intl.formatMessage({ id: "difficultyLevelText" }),
@@ -55,6 +46,16 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         easy: intl.formatMessage({ id: "easy" }),
         veryEasy: intl.formatMessage({ id: "veryEasy" }),
     };
+
+    const {
+        course,
+        code,
+        review: comment,
+        generalRating,
+        difficultyLevel,
+        wouldEnrollAgain,
+    } = review;
+
 
     const StyledRating = styled(Rating)(({ theme }) => ({
         '& .MuiRating-iconEmpty .MuiSvgIcon-root': {
@@ -96,12 +97,12 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
     }
 
     return (
-        <Paper elevation={3} sx={{ padding: 2, marginBottom: 2}}>
+        <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
             <Typography variant="body1" align="left">
                 {`${code}: ${course}`}
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Rating value={generalRating} readOnly precision={0.1} /> 
+                <Rating value={generalRating} readOnly precision={0.1} />
                 <Typography variant="body1" sx={{ marginLeft: 1 }}>
                     {generalRating}
                 </Typography>
@@ -110,16 +111,15 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
                 <StyledRating
                     // name="highlight-selected-only"
                     // IconContainerComponent={IconContainer}
-                    value={difficultyLevel}
+                    value={typeof difficultyLevel === 'number' ? difficultyLevel : 0}
                     readOnly
                     // precision={0.1}
                     // name="highlight-selected-only"
                     defaultValue={2}
                     IconContainerComponent={IconContainer}
-                    getLabelText={(value: number) => customIcons[value].label}
                     highlightSelectedOnly
                 /> <Typography variant="body1" sx={{ marginLeft: 1 }}>
-                    {customIcons[difficultyLevel.toFixed(0)].label}
+                    {typeof difficultyLevel === 'number' ? customIcons[difficultyLevel.toFixed(0)].label : ""}
                 </Typography>
             </Box>
 

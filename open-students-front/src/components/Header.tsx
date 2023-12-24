@@ -9,26 +9,40 @@ import { SearchBar } from './SearchBar';
 import { SearchResultsList } from './SearchResultsList';
 import { useState } from "react";
 import { Typography } from "@mui/material";
+import "../styles/Header.css";
 
 
-export default function Header( {setCurrentProfessorId}: {setCurrentProfessorId: React.Dispatch<React.SetStateAction<string>>}) {
+export default function Header({ setCurrentProfessorId }: { setCurrentProfessorId: React.Dispatch<React.SetStateAction<string>> }) {
     const intl = useIntl();
 
-    const ingresar = intl.formatMessage({ id: 'headerLogin' });
-    const text = localStorage.getItem("accUserName")?.split(' ')[0] ?? ingresar;
+    const textConstants = {
+        login: intl.formatMessage({ id: 'headerLogin' }),
+        openStudents: intl.formatMessage({ id: 'openStudents' }),
+    };
+
+    const text = localStorage.getItem("accUserName")?.split(' ')[0] ?? textConstants.login;
     const link = localStorage.getItem("accUserName") ? `/user` : `/Register`;
 
     const [results, setResults] = useState<{ name: string, id: string }[]>([]);
     const [showResults, setShowResults] = useState(false);
 
+    const LogoOpenStudents = () =>
+        <Toolbar>
+            <Nav.Link style={{ textDecoration: 'none' }} href="/">
+                <Typography variant="h5" style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    {textConstants.openStudents}
+                </Typography>
+            </Nav.Link>
+        </Toolbar>
+
     return (
-        <Box sx={boxStyle}>
+        <Box className="header">
             <AppBar position="static" sx={{ backgroundColor: "white" }}>
-                <Toolbar sx={firstRowStyle}>
+                <Toolbar className="first-row">
                     <LogoOpenStudents />
                     <div className="search-bar-container">
-                        <SearchBar results={results} setResults={setResults} setShowResults={setShowResults}  />
-                        {showResults && <SearchResultsList results={results} setCurrentProfessorId={setCurrentProfessorId} setShowResults={setShowResults}/>}
+                        <SearchBar results={results} setResults={setResults} setShowResults={setShowResults} />
+                        {showResults && <SearchResultsList results={results} setCurrentProfessorId={setCurrentProfessorId} setShowResults={setShowResults} />}
                     </div>
                     <LoginButton text={text} link={link} />
                 </Toolbar>
@@ -37,32 +51,6 @@ export default function Header( {setCurrentProfessorId}: {setCurrentProfessorId:
     );
 }
 
-const boxStyle = {
-    flexGrow: 1,
-    position: 'fixed',
-    top: 0,
-    width: '100%',
-    zIndex: 100,
-}
-
-
-const firstRowStyle = {
-    alignItems: 'center',
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingTop: "4px",
-}
-
-
-
-const LogoOpenStudents = () =>
-    <Toolbar>
-        <Nav.Link style={{ textDecoration: 'none' }} href="/">
-            <Typography variant="h5" style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                OpenRatings
-            </Typography>
-        </Nav.Link>
-    </Toolbar>
 
 const LoginButton = ({ text, link }: { text: string, link: string }) => {
 

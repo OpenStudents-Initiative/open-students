@@ -7,6 +7,8 @@ import CardContent from '@mui/joy/CardContent';
 import Typography from '@mui/joy/Typography';
 import { Sheet } from '@mui/joy';
 import { COLORS } from '../styles/colors';
+import { useIntl } from 'react-intl';
+import professorAvatar from "../assets/professorAvatar.png";
 
 interface Professor {
     name: string;
@@ -21,7 +23,18 @@ interface ProfessorCardProps {
     professor: Professor;
 }
 
+
 const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
+
+    const intl = useIntl();
+    const textConstants = {
+        averageRatingText: intl.formatMessage({ id: "averageRatingText" }),
+        averageCourseGradeText: intl.formatMessage({ id: "averageCourseGradeText" }),
+        averageDifficultyLevelText: intl.formatMessage({ id: "averageDifficultyLevelText" }),
+        seeReviewsText: intl.formatMessage({ id: "seeReviewsText" }),
+    };
+
+    const roundOrHyphen = (num: number) => typeof num === 'number' ? num.toFixed(2) : "—"
 
     const {
         name,
@@ -48,8 +61,8 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
                     overflow: 'auto',
                 }}
             >
-                <AspectRatio flex ratio="1" maxHeight={182} sx={{ minWidth: 182 }}>
-                    <img />
+                <AspectRatio flex ratio="1" maxHeight={200} sx={{ minWidth: 200 }}>
+                    <img src={professorAvatar} alt="professorAvatar" />
                 </AspectRatio>
                 <CardContent>
                     <Typography fontSize="xl" fontWeight="lg">
@@ -75,21 +88,23 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
                     >
                         <div>
                             <Typography level="body-xs" fontWeight="lg">
-                                Average Rating
+                                {textConstants.averageRatingText}
                             </Typography>
-                            <Typography fontWeight="lg">{averageRating.toFixed(2)}</Typography>
+                            <Typography fontWeight="lg">
+                                {roundOrHyphen(averageRating)}
+                            </Typography>
                         </div>
                         <div>
                             <Typography level="body-xs" fontWeight="lg">
-                                Avg Student Course Grade
+                                {textConstants.averageCourseGradeText}
                             </Typography>
-                            <Typography fontWeight="lg">{averageCourseGrade.toFixed(2)}</Typography>
+                            <Typography fontWeight="lg">{roundOrHyphen(averageCourseGrade)}</Typography>
                         </div>
                         <div>
                             <Typography level="body-xs" fontWeight="lg">
-                                Avg Difficulty Level
+                                {textConstants.averageDifficultyLevelText}
                             </Typography>
-                            <Typography fontWeight="lg">{averageDifficultyLevel.toFixed(2)}</Typography>
+                            <Typography fontWeight="lg">{roundOrHyphen(averageDifficultyLevel)}</Typography>
                         </div>
                     </Sheet>
 
@@ -103,7 +118,7 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
                                 },
                             }}
                         >
-                            Reseñar a este profesor
+                            {intl.formatMessage({ id: "seeReviewsText" })}
                         </Button>
                     </Box>
                 </CardContent>
@@ -113,3 +128,5 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
 };
 
 export default ProfessorCard;
+
+

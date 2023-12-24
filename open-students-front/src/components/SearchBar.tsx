@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { supabase } from "../App";
 import "../styles//SearchBar.css";
+import { useIntl } from 'react-intl';
+
 
 interface SearchBarProps {
     results: Array<{ name: string, id: string }>,
@@ -9,7 +11,10 @@ interface SearchBarProps {
     setShowResults: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps ) => {
+export const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
+
+    const intl = useIntl();
+    const searchProfessors = intl.formatMessage({ id: 'searchProfessors' });
 
     const [professorNames, setProfessorNames] = useState([]);
     const [input, setInput] = useState("");
@@ -23,8 +28,6 @@ export const SearchBar = ({ results, setResults, setShowResults }: SearchBarProp
         let { data: professorNames, error } = await supabase
             .from('professor')
             .select('name, id')
-
-        console.log(professorNames);
 
         if (error) {
             console.log(error);
@@ -41,7 +44,10 @@ export const SearchBar = ({ results, setResults, setShowResults }: SearchBarProp
         }
 
         const profs: { name: string, id: string }[] =
-            professorNames.filter(({ name }: { name: string, id: string }) => name.toLowerCase().includes(input.toLowerCase()));
+            professorNames
+                .filter(({ name }: { name: string, id: string }) => name.toLowerCase().includes(input.toLowerCase()))
+                .sort((a: { name: string, id: string }, b: { name: string, id: string }) =>
+                    a.name.toLowerCase().indexOf(input.toLowerCase()) - b.name.toLowerCase().indexOf(input.toLowerCase()));
         setResults(profs);
 
         setShowResults(results && results.length > 0);
@@ -56,7 +62,7 @@ export const SearchBar = ({ results, setResults, setShowResults }: SearchBarProp
         <div className="input-wrapper">
             <FaSearch id="search-icon" />
             <input
-                placeholder="Type to search..."
+                placeholder={searchProfessors}
                 value={input}
                 onChange={(e) => handleChange(e.target.value)}
             />
