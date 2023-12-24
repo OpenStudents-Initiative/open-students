@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from "react";
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
-import ProfessorPage from './components/MainPage.tsx';
+import ProfessorPage from './pages/ProfessorPage.tsx';
 import './styles/App.css';
 import { createClient } from '@supabase/supabase-js'
 
@@ -12,19 +12,13 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function App() {
-
-
-
-
-
-
     return (
         <div className="App">
             <Header />
             <BrowserRouter>
                 <ScrollToTop />
                 <Routes>
-                    <Route path="/" element={<ProfessorPage id='aae7dde0-6ba0-41cc-96eb-b5b73c41c0ad'/>} />
+                    <Route path="/" element={<ProfessorPage id='2d5f15fe-4a5c-4567-84f9-02291c5129eb' />} />
                 </Routes>
             </BrowserRouter>
             <Footer />

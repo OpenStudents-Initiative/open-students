@@ -7,21 +7,29 @@ import CardContent from '@mui/joy/CardContent';
 import Typography from '@mui/joy/Typography';
 import { Sheet } from '@mui/joy';
 
-interface ProfessorCardProps {
+interface Professor {
     name: string;
     university: string;
     dependency: string;
     averageRating: number;
-    averageStudentCourseGrade: number;
+    averageCourseGrade: number;
+    averageDifficultyLevel: number;
 }
 
-const ProfessorCard: React.FC<ProfessorCardProps> = ({
-    name,
-    university,
-    dependency,
-    averageRating,
-    averageStudentCourseGrade,
-}) => {
+interface ProfessorCardProps {
+    professor: Professor;
+}
+
+const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
+
+    const {
+        name,
+        university,
+        dependency,
+        averageRating,
+        averageCourseGrade,
+        averageDifficultyLevel,
+    } = professor;
 
     return (
         <Box
@@ -68,22 +76,25 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({
                             <Typography level="body-xs" fontWeight="lg">
                                 Average Rating
                             </Typography>
-                            <Typography fontWeight="lg">{averageRating.toFixed(3)}</Typography>
+                            <Typography fontWeight="lg">{averageRating.toFixed(2)}</Typography>
                         </div>
                         <div>
                             <Typography level="body-xs" fontWeight="lg">
                                 Avg Student Course Grade
                             </Typography>
-                            <Typography fontWeight="lg">{averageStudentCourseGrade.toFixed(0)}</Typography>
+                            <Typography fontWeight="lg">{averageCourseGrade.toFixed(2)}</Typography>
+                        </div>
+                        <div>
+                            <Typography level="body-xs" fontWeight="lg">
+                                Avg Difficulty Level
+                            </Typography>
+                            <Typography fontWeight="lg">{averageDifficultyLevel.toFixed(2)}</Typography>
                         </div>
                     </Sheet>
 
                     <Box sx={{ display: 'flex', gap: 1.5, '& > button': { flex: 1 } }}>
                         <Button variant="solid" color="primary">
-                            Like
-                        </Button>
-                        <Button variant="solid" color="danger">
-                            Dislike
+                            Reseñar a este profesor
                         </Button>
                     </Box>
                 </CardContent>

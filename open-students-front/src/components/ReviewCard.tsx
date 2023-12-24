@@ -12,18 +12,17 @@ import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfi
 import { useIntl } from "react-intl";
 
 interface Review {
+    id: string;
+    course: string;
+    code: string;
+    period: string;
+    createdAt: string;
     review: string;
     generalRating: number;
     difficultyLevel: number;
     courseGrade: number;
     wouldEnrollAgain: boolean;
-    semester: {
-        name: string;
-    };
-    course: {
-        name: string;
-        code: string;
-    };
+    professorId: string;
 }
 
 interface ReviewCardProps {
@@ -31,14 +30,14 @@ interface ReviewCardProps {
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
+
     const {
+        course,
+        code,
         review: comment,
         generalRating,
         difficultyLevel,
-        courseGrade,
         wouldEnrollAgain,
-        semester,
-        course,
     } = review;
 
     const intl = useIntl();
@@ -99,7 +98,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
     return (
         <Paper elevation={3} sx={{ padding: 2, marginBottom: 2}}>
             <Typography variant="body1" align="left">
-                {`${course.code}: ${course.name}`}
+                {`${code}: ${course}`}
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Rating value={generalRating} readOnly precision={0.1} /> 
@@ -120,7 +119,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
                     getLabelText={(value: number) => customIcons[value].label}
                     highlightSelectedOnly
                 /> <Typography variant="body1" sx={{ marginLeft: 1 }}>
-                    {customIcons[difficultyLevel].label}
+                    {customIcons[difficultyLevel.toFixed(0)].label}
                 </Typography>
             </Box>
 
