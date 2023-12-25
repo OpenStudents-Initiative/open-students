@@ -97,7 +97,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
     }
 
     return (
-        <Paper elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
+        <Paper elevation={3} sx={{ padding: 2, marginBottom: 2, width: '100%' }}>
             <Typography variant="body1" align="left">
                 {`${code}: ${course}`}
             </Typography>

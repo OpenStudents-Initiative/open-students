@@ -21,17 +21,18 @@ interface Professor {
 
 interface ProfessorCardProps {
     professor: Professor;
+    makeReview: React.MouseEventHandler<HTMLElement>;
 }
 
 
-const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
+const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor, makeReview }) => {
 
     const intl = useIntl();
     const textConstants = {
         averageRatingText: intl.formatMessage({ id: "averageRatingText" }),
         averageCourseGradeText: intl.formatMessage({ id: "averageCourseGradeText" }),
         averageDifficultyLevelText: intl.formatMessage({ id: "averageDifficultyLevelText" }),
-        seeReviewsText: intl.formatMessage({ id: "seeReviewsText" }),
+        writeReviewText: intl.formatMessage({ id: "writeReviewText" }),
     };
 
     const roundOrHyphen = (num: number) => typeof num === 'number' ? num.toFixed(2) : "—"
@@ -109,7 +110,8 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
                     </Sheet>
 
                     <Box sx={{ display: 'flex', gap: 1.5, '& > button': { flex: 1 } }}>
-                        <Button variant="solid" 
+                        <Button variant="solid"
+                            onClick={makeReview}
                             sx={{
                                 color: "white",
                                 backgroundColor: COLORS.primary,
@@ -118,7 +120,7 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
                                 },
                             }}
                         >
-                            {intl.formatMessage({ id: "seeReviewsText" })}
+                            {intl.formatMessage({ id: "writeReviewText" })}
                         </Button>
                     </Box>
                 </CardContent>
@@ -128,5 +130,3 @@ const ProfessorCard: React.FC<ProfessorCardProps> = ({ professor }) => {
 };
 
 export default ProfessorCard;
-
-

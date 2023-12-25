@@ -1,34 +1,25 @@
 {
     "openStudents": "OpenStudents",
-
-    "footerText": "OpenStudents, an initiative by students for students",
-
+    "footerText": "OpenStudents, a free and open initiative by students for students",
     "headerLogin": "Log in",
-
     "loadingProfessor": "Loading professor...",
     "loadingUniversity": "Loading university...",
     "loadingDependency": "Loading faculty...",
-
-
     "generalRatingText": "Overall Rating:",
     "difficultyLevelText": "Difficulty Level:",
     "courseGradeText": "Obtained Grade:",
     "wouldEnrollAgainText": "Would take class with this professor again:",
     "semesterText": "Semester:",
-
     "veryDifficult": "Very Difficult",
     "difficult": "Difficult",
     "average": "Average Difficulty",
     "easy": "Easy",
     "veryEasy": "Very Easy",
-
     "averageRatingText": "Average Rating:",
     "averageCourseGradeText": "Average Obtained Grade:",
     "averageDifficultyLevelText": "Average Difficulty Level:",
-    "seeReviewsText": "See Reviews",
-
+    "writeReviewText": "Write a review",
     "searchProfessors": "Search Professors",
-
     "noReviewsYet": "No reviews yet :( for this professor",
     "beTheFirstReview": "Be the first to review this professor!"
 }

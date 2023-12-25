@@ -5,8 +5,10 @@ import Grid from '@mui/material/Grid';
 import { useEffect, useState } from "react";
 import { supabase } from '../App.tsx'
 import { useIntl } from 'react-intl';
+import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
+import MakeReviewPopup from "../components/MakeReviewPopup.tsx";
 
-export default function ProfessorPage({ id }: { id: string }) {
+export default function ProfessorPage({ id: professorId }: { id: string }) {
 
     const intl = useIntl();
     const textConstants = {
@@ -17,6 +19,7 @@ export default function ProfessorPage({ id }: { id: string }) {
         loadingUniversity: intl.formatMessage({ id: "loadingUniversity" }),
         loadingDependency: intl.formatMessage({ id: "loadingDependency" }),
     };
+ 
 
     const [professor, setProfessor] = useState({
         name: textConstants.loadingProfessor,
@@ -27,20 +30,32 @@ export default function ProfessorPage({ id }: { id: string }) {
         averageDifficultyLevel: 5.0,
     });
 
+
+    const [isReviewPopupOpen, setReviewPopupOpen] = useState(false);
+
+    const handleOpenReviewPopup = () => {
+      setReviewPopupOpen(true);
+    };
+  
+    const handleCloseReviewPopup = () => {
+      setReviewPopupOpen(false);
+    };
+
+
     const [reviews, setReviews] = useState([]);
 
     useEffect(() => {
         async function fetchData() {
-            const professor = await getProfessor(id);
+            const professor = await getProfessor(professorId);
             setProfessor(professor);
 
-            const reviews = await getReviews(id);
+            const reviews = await getReviews(professorId);
             setReviews(reviews);
         }
 
-        if (id)
+        if (professorId)
             fetchData();
-    }, [id]);
+    }, [professorId]);
 
 
     return (
@@ -52,7 +67,7 @@ export default function ProfessorPage({ id }: { id: string }) {
                 justifyContent="center"
             >
                 <Grid item md={12} lg={3}>
-                    <ProfessorCard professor={professor} />
+                    <ProfessorCard professor={professor} makeReview={handleOpenReviewPopup} />
                 </Grid>
                 <Grid item md={12} lg={9}>
                     {
@@ -77,6 +92,7 @@ export default function ProfessorPage({ id }: { id: string }) {
                                 </Typography>
                             </Box>
                     }
+                    <MakeReviewPopup open={isReviewPopupOpen} onClose={handleCloseReviewPopup} />
                 </Grid>
             </Grid>
         </Box>
