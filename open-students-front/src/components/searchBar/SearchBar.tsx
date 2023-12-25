@@ -56,7 +56,12 @@ async function fetchProfessorNames(setProfessorNames: React.Dispatch<React.SetSt
         .select('name, id')
 
     if (error) {
-        console.log(error);
+        console.error("Error fetching professor names: ", error);
+        return;
+    }
+
+    if (!professorNames) {
+        console.error("No professor names found");
         return;
     }
 

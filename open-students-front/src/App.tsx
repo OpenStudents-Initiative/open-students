@@ -20,7 +20,7 @@ export default function App() {
         <div className="App">
             <Header setCurrentProfessorId={setCurrentProfessorId} />
             <BrowserRouter>
-                <ScrollToTop />
+                <ScrollToTop/>
                 <Routes>
                     <Route path="/" element={<ProfessorPage id={currentProfessorId} />} />
                 </Routes>

@@ -7,6 +7,20 @@ import { supabase } from '../App.tsx'
 import { useIntl } from 'react-intl';
 import CreateReview from "../components/createReview/CreateReview.tsx";
 
+interface Review {
+    id: string;
+    course: string;
+    code: string;
+    period: string;
+    createdAt: string;
+    review: string;
+    generalRating: number;
+    difficultyLevel: number;
+    courseGrade: number;
+    wouldEnrollAgain: boolean;
+    professorId: string;
+}
+
 export default function ProfessorPage({ id: professorId }: { id: string }) {
 
     const intl = useIntl();
@@ -41,7 +55,7 @@ export default function ProfessorPage({ id: professorId }: { id: string }) {
     };
 
 
-    const [reviews, setReviews] = useState([]);
+    const [reviews, setReviews] = useState<Review[]>([]);
 
     useEffect(() => {
         async function fetchData() {
@@ -49,18 +63,20 @@ export default function ProfessorPage({ id: professorId }: { id: string }) {
             setProfessor(professor);
 
             const reviews = await fetchReviews(professorId);
-            setReviews(reviews);
+            const sortedReviews = reviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            setReviews(sortedReviews);
         }
 
         if (professorId)
             fetchData();
-    }, [professorId]);
+    }, [professorId, isReviewPopupOpen]);
 
 
     return (
         <Box sx={{ flexGrow: 1 }} width="90%"
             margin="auto"
             border={0}
+            paddingBottom="1.5em"
         >
             <Grid container direction={'row'} spacing={9}
                 justifyContent="center"
@@ -110,6 +126,9 @@ async function fetchProfessor(id: string) {
         return [];
     }
 
+    if (!professor)
+        return [];
+
     return professor[0];
 }
 
@@ -124,6 +143,9 @@ async function fetchReviews(id: string) {
         console.error('Error fetching reviews:', error);
         return [];
     }
+
+    if (!reviews)
+        return [];
 
     return reviews;
 }

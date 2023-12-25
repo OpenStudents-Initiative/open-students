@@ -65,7 +65,6 @@ const ReviewDifficultyLevel = ({ difficultyLevel }: { difficultyLevel: number })
         <StyledRating
             value={typeof difficultyLevel === 'number' ? difficultyLevel : 0}
             readOnly
-            // precision={0.1}
             defaultValue={2}
             IconContainerComponent={IconContainer}
             highlightSelectedOnly

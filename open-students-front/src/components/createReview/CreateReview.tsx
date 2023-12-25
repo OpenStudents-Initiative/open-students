@@ -23,6 +23,16 @@ interface CreateReviewProps {
     professor: { name: string, id: string };
 }
 
+interface Course {
+    professorId: string;
+    courseId: string;
+    courseName: string;
+}
+
+interface Period {
+    name: string;
+    id: string;
+}
 
 const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 
@@ -46,19 +56,35 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     const [wouldTakeAgain, setWouldTakeAgain] = useState(false);
     const [difficultyRating, setDifficultyRating] = useState(3);
     const [obtainedGrade, setObtainedGrade] = useState(4.5);
-    const [selectedClass, setSelectedClass] = useState('');
+    const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedPeriod, setSelectedPeriod] = useState('');
 
-    const [classes, setClasses] = useState<string[]>([]);
+    const [courses, setCourses] = useState<string[]>([]);
     const [periods, setPeriods] = useState<string[]>([]);
+
+    const [periodsMap, setPeriodsMap] = useState<Map<string, string>>(new Map())
+    const [coursesMap, setCoursesMap] = useState<Map<string, string>>(new Map())
+
+
 
     useEffect(() => {
         async function fetchData() {
-            const courses = await fetchCourses(professor.id);
-            setClasses(courses);  // TODO: courses should always have an "Others" option, which it doesn't have right now
+            const courses: Course[] = await fetchCourses(professor.id);
+            const preCoursesMap = new Map<string, string>();
+            for (const course of courses) {
+                preCoursesMap.set(course.courseName, course.courseId);
+            }
+            setCoursesMap(preCoursesMap);
+            setCourses(courses.map((course: Course) => course.courseName));
 
-            const periods = await fetchPeriods();
-            setPeriods(periods);
+
+            const periods: Period[] = await fetchPeriods();
+            const prePeriodsMap = new Map<string, string>();
+            for (const period of periods) {
+                prePeriodsMap.set(period.name, period.id);
+            }
+            setPeriodsMap(prePeriodsMap);
+            setPeriods(periods.map((period: Period) => period.name));
         }
 
         if (professor.id) {
@@ -66,8 +92,27 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
         }
     }, [professor.id]);
 
-    const handleReviewSubmit = () => {
-        // TODO: Submit review to backend
+    async function handleReviewSubmit() {
+
+        if (!coursesMap.get(selectedCourse) || !periodsMap.get(selectedPeriod)) {
+            console.error('Error: no course or period selected');
+            return;
+        }
+
+        const reviewObject: postReviewProps = {
+            created_at: new Date().toISOString(),
+            review: reviewText,
+            general_rating: professorRating,
+            difficulty_level: difficultyRating,
+            course_grade: obtainedGrade,
+            would_enroll_again: wouldTakeAgain,
+            fk_professor: professor.id,
+            fk_course: String(coursesMap.get(selectedCourse)),
+            fk_academic_period: String(periodsMap.get(selectedPeriod)),
+            creator: null,  // TODO: get user id from auth
+        };
+
+        postReview(reviewObject);
         onClose();
     };
 
@@ -104,9 +149,9 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
                     />
                     <CreateReviewCourses
                         selectClassText={textConstants.selectClassText}
-                        classes={classes}
-                        selectedClass={selectedClass}
-                        setSelectedClass={setSelectedClass}
+                        classes={courses}
+                        selectedClass={selectedCourse}
+                        setSelectedClass={setSelectedCourse}
                     />
                     <CreateReviewPeriods
                         selectPeriodText={textConstants.selectPeriodText}
@@ -125,6 +170,7 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
                                 backgroundColor: COLORS.dark,
                             },
                         }}
+
                     >
                         {textConstants.submitReviewText}
                     </Button>
@@ -137,50 +183,91 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 export default CreateReview;
 
 
+interface postReviewProps {
+    created_at: string;
+    review: string;
+    general_rating: number;
+    difficulty_level: number;
+    course_grade: number;
+    would_enroll_again: boolean;
+    fk_professor: string;
+    fk_course: string;
+    fk_academic_period: string;
+    creator: string;
+}
+
+
+const postReview = async (reviewObject: postReviewProps) => {
+    const { data, error } = await supabase
+        .from('review')
+        .insert([
+            reviewObject
+        ])
+        .select()
+
+    if (error || !data) {
+        console.error('Error inserting review: ', error);
+        return;
+    }
+
+}
+
+
 const fetchCourses = async (id: string) => {
-    let { data: courses, error } = await supabase
+    let { data: received_courses, error } = await supabase
         .from('professor_courses')
         .select('*')
         .eq('professorId', id)
 
     if (error) {
-        console.log('Error fetching courses: ', error);
+        console.error('Error fetching courses: ', error);
         return [];
     }
 
-    const coursesNames: string[] = courses
-        .map((course: { professorId: string, courseName: string }) => course.courseName)
-        .sort();
+    if (!received_courses) {
+        console.error('No courses found');
+        return [];
+    }
 
-    return coursesNames;
+    const courses: Course[] = received_courses
+        .sort((course1: Course, course2: Course) => course1.courseName.localeCompare(course2.courseName))
+
+    return courses;
 }
 
 
 const fetchPeriods = async () => {
     let { data: academic_period, error } = await supabase
         .from('academic_period')
-        .select('name')
+        .select('name, id')
 
     if (error) {
-        console.log('Error fetching periods: ', error);
+        console.error('Error fetching periods: ', error);
         return [];
     }
 
-    const periodsNames: string[] = academic_period
-        .map((period: { name: string }) => period.name)
-        .sort((a: string, b: string) => {
-            // Extract numeric parts from the strings
-            const numA = parseInt(a, 10) || 0;
-            const numB = parseInt(b, 10) || 0;
+    if (!academic_period) {
+        console.error('No periods found');
+        return [];
+    }
 
-            // Compare numeric parts first
-            if (numA !== numB) {
-                return numB - numA;
-            }
+    const periods: Period[] = academic_period.sort(comparePeriods);
 
-            // If numeric parts are equal, compare the entire strings
-            return b.localeCompare(a);
-        });
+    return periods;
+}
 
-    return periodsNames;
+
+const comparePeriods = (period1: Period, period2: Period) => {
+    // Descending order, prioritizing numbers over strings. E.g: 2023-20, 2023-10, 2022-20, ..., other
+
+    // Extract numeric parts from the strings
+    const num1 = parseInt(period1.name, 10) || 0;
+    const num2 = parseInt(period2.name, 10) || 0;
+    // Compare numeric parts first
+    if (num1 !== num2) {
+        return num2 - num1;
+    }
+
+    // If numeric parts are equal, compare the entire strings
+    return period2.name.localeCompare(period1.name);
 }
