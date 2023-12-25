@@ -38,7 +38,6 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 
     const intl = useIntl();
     const textConstants = {
-        createReviewText: intl.formatMessage({ id: 'createReviewText' }),
         writeAReviewFor: intl.formatMessage({ id: 'writeAReviewFor' }),
         wouldTakeAgainText: intl.formatMessage({ id: 'wouldTakeAgainText' }),
         wouldNotTakeAgainText: intl.formatMessage({ id: 'wouldNotTakeAgainText' }),
@@ -52,12 +51,19 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     };
 
     const [reviewText, setReviewText] = useState('');
-    const [professorRating, setProfessorRating] = useState(4);
+    const [professorRating, setProfessorRating] = useState(0);
     const [wouldTakeAgain, setWouldTakeAgain] = useState(false);
-    const [difficultyRating, setDifficultyRating] = useState(3);
-    const [obtainedGrade, setObtainedGrade] = useState(4.5);
+    const [difficultyRating, setDifficultyRating] = useState(0);
+    const [obtainedGrade, setObtainedGrade] = useState(0);
     const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedPeriod, setSelectedPeriod] = useState('');
+
+    const [showDifficultyError, setShowDifficultyError] = useState(false);
+    const [showRatingError, setShowRatingError] = useState(false);
+    const [showTextFieldError, setShowTextFieldError] = useState(false);
+    const [showCourseError, setShowCourseError] = useState(false);
+    const [showPeriodError, setShowPeriodError] = useState(false);
+    const [showGradeError, setShowGradeError] = useState(false);
 
     const [courses, setCourses] = useState<string[]>([]);
     const [periods, setPeriods] = useState<string[]>([]);
@@ -94,6 +100,13 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 
     async function handleReviewSubmit() {
 
+        setShowTextFieldError(reviewText === '');
+        setShowRatingError(professorRating < 1);
+        setShowDifficultyError(difficultyRating < 1);
+        setShowCourseError(selectedCourse === '');
+        setShowPeriodError(selectedPeriod === '');
+        setShowGradeError(obtainedGrade < 1);
+
         if (!coursesMap.get(selectedCourse) || !periodsMap.get(selectedPeriod)) {
             console.error('Error: no course or period selected');
             return;
@@ -113,7 +126,9 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
         };
 
         postReview(reviewObject);
-        onClose();
+
+        if (!(showCourseError || showPeriodError || showTextFieldError || showRatingError || showDifficultyError || showGradeError))
+            onClose();
     };
 
     return (
@@ -122,19 +137,24 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
             <DialogContent>
                 <Stack spacing={2}>
                     <CreateReviewTextField
-                        placeholder={textConstants.createReviewText}
                         reviewText={reviewText}
                         setReviewText={setReviewText}
+                        showError={showTextFieldError}
+                        setShowError={setShowTextFieldError}
                     />
                     <CreateReviewRating
                         textRating={textConstants.rating}
                         professorRating={professorRating}
                         setProfessorRating={setProfessorRating}
+                        showError={showRatingError}
+                        setShowError={setShowRatingError}
                     />
                     <CreateReviewDifficulty
                         difficultyText={textConstants.difficulty}
                         difficultyRating={difficultyRating}
                         setDifficultyRating={setDifficultyRating}
+                        showError={showDifficultyError}
+                        setShowError={setShowDifficultyError}
                     />
                     <CreateReviewWouldTakeAgain
                         wouldTakeAgainText={textConstants.wouldTakeAgainText}
@@ -146,18 +166,24 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
                         obtainedGradeText={textConstants.obtainedGradeText}
                         obtainedGrade={obtainedGrade}
                         setObtainedGrade={setObtainedGrade}
+                        showError={showGradeError}
+                        setShowError={setShowGradeError}
                     />
                     <CreateReviewCourses
                         selectClassText={textConstants.selectClassText}
                         classes={courses}
                         selectedClass={selectedCourse}
                         setSelectedClass={setSelectedCourse}
+                        showError={showCourseError}
+                        setShowError={setShowCourseError}
                     />
                     <CreateReviewPeriods
                         selectPeriodText={textConstants.selectPeriodText}
                         periods={periods}
                         selectedPeriod={selectedPeriod}
                         setSelectedPeriod={setSelectedPeriod}
+                        showError={showPeriodError}
+                        setShowError={setShowPeriodError}
                     />
                     <Button
                         variant="contained"

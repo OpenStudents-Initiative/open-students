@@ -30,5 +30,12 @@
     "selectPeriodText": "Seleccionar periodo",
     "submitReviewText": "Publicar Reseña",
     "difficulty": "Dificultad",
-    "rating": "Rating"
+    "rating": "Rating",
+
+    "textfieldCannotBeEmpty": "Por favor escribe una reseña de al menos 5 caracteres."
+    , "minimumRating": "El rating mínimo es de 1 estrella."
+,"difficultyMustBeSelected": "Por favor selecciona un nivel de dificultad."
+, "minimumGradeError": "La calificación mínima es de 1.5."
+,"courseNotSelectedError": "Por favor selecciona un curso."
+,"periodNotSelectedError": "Por favor selecciona un periodo."
 }

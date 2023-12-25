@@ -15,6 +15,8 @@ interface ReviewDifficultyProps {
     difficultyText: string;
     difficultyRating: number;
     setDifficultyRating: React.Dispatch<React.SetStateAction<number>>;
+    showError: boolean;
+    setShowError: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const StyledRating = styled(Rating)(({ theme }) => ({
@@ -23,17 +25,16 @@ const StyledRating = styled(Rating)(({ theme }) => ({
     },
 }));
 
-
-const CreateReviewDifficulty = ({ difficultyText, difficultyRating, setDifficultyRating }: ReviewDifficultyProps) => {
-
+const CreateReviewDifficulty = ({ difficultyText, difficultyRating, setDifficultyRating, showError, setShowError }: ReviewDifficultyProps) => {
     const intl = useIntl();
     const textConstants = {
-        veryDifficult: intl.formatMessage({ id: "veryDifficult" }),
-        difficult: intl.formatMessage({ id: "difficult" }),
-        average: intl.formatMessage({ id: "average" }),
-        easy: intl.formatMessage({ id: "easy" }),
-        veryEasy: intl.formatMessage({ id: "veryEasy" }),
-    }
+        veryDifficult: intl.formatMessage({ id: 'veryDifficult' }),
+        difficult: intl.formatMessage({ id: 'difficult' }),
+        average: intl.formatMessage({ id: 'average' }),
+        easy: intl.formatMessage({ id: 'easy' }),
+        veryEasy: intl.formatMessage({ id: 'veryEasy' }),
+        difficultyMustBeSelected: intl.formatMessage({ id: 'difficultyMustBeSelected' }),
+    };
 
     const customIcons: {
         [index: string]: {
@@ -43,27 +44,27 @@ const CreateReviewDifficulty = ({ difficultyText, difficultyRating, setDifficult
     } = {
         0: {
             icon: <SentimentVeryDissatisfiedIcon color="error" />,
-            label: textConstants.veryDifficult
+            label: textConstants.veryDifficult,
         },
         1: {
             icon: <SentimentVeryDissatisfiedIcon color="error" />,
-            label: textConstants.veryDifficult
+            label: textConstants.veryDifficult,
         },
         2: {
             icon: <SentimentDissatisfiedIcon color="error" />,
-            label: textConstants.difficult
+            label: textConstants.difficult,
         },
         3: {
             icon: <SentimentSatisfiedIcon color="warning" />,
-            label: textConstants.average
+            label: textConstants.average,
         },
         4: {
             icon: <SentimentSatisfiedAltIcon color="success" />,
-            label: textConstants.easy
+            label: textConstants.easy,
         },
         5: {
             icon: <SentimentVerySatisfiedIcon color="success" />,
-            label: textConstants.veryEasy
+            label: textConstants.veryEasy,
         },
     };
 
@@ -72,24 +73,37 @@ const CreateReviewDifficulty = ({ difficultyText, difficultyRating, setDifficult
         return <span {...other}>{customIcons[value ? value : 1].icon}</span>;
     }
 
-    return <Box>
-        <Typography component="legend">{difficultyText}</Typography>
-        <Stack spacing={2} direction="row">
-            <StyledRating
-                name="professor-difficulty"
-                precision={1}
-                IconContainerComponent={IconContainer}
-                highlightSelectedOnly
-                size="large"
-                onChange={(_e, value) => setDifficultyRating(value as number)}
-                value={typeof difficultyRating === 'number' ? difficultyRating : 0}
-            />
-            <Typography variant="body1" sx={{ marginLeft: 1 }}>
-                {typeof difficultyRating === 'number' ? customIcons[difficultyRating.toFixed(0)].label : ''}
-            </Typography>
-        </Stack>
-    </Box>
+    const handleRatingChange = (_e: React.ChangeEvent<{}>, value: number | null) => {
+        if (value !== null) {
+            setDifficultyRating(value);
+            setShowError(value < 1);
+        }
+    };
 
-}
+    return (
+        <Box>
+            <Typography component="legend">{difficultyText}</Typography>
+            <Stack spacing={2} direction="row">
+                <StyledRating
+                    name="professor-difficulty"
+                    precision={1}
+                    IconContainerComponent={IconContainer}
+                    highlightSelectedOnly
+                    size="large"
+                    onChange={handleRatingChange}
+                    value={typeof difficultyRating === 'number' ? difficultyRating : 0}
+                />
+                <Typography variant="body1" sx={{ marginLeft: 1 }}>
+                    {typeof difficultyRating === 'number' ? customIcons[difficultyRating.toFixed(0)].label : ''}
+                </Typography>
+            </Stack>
+            {showError && (
+                <Typography variant="body2" sx={{ color: 'red', marginTop: 1 }}>
+                    {textConstants.difficultyMustBeSelected}
+                </Typography>
+            )}
+        </Box>
+    );
+};
 
 export default CreateReviewDifficulty;
