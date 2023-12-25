@@ -1,4 +1,4 @@
-import "../styles/SearchResultsList.css";
+import "../../styles/SearchResultsList.css";
 import { SearchResult } from "./SearchResult";
 
 interface SearchResultsListProps {
@@ -11,7 +11,7 @@ export const SearchResultsList = ({ results, setCurrentProfessorId, setShowResul
     return (
         <div className="results-list">
             {results.map((result, id) => {
-                return <SearchResult result={result} key={id} setCurrentProfessorId={setCurrentProfessorId} setShowResults={setShowResults}/>;
+                return <SearchResult result={result} key={id} setCurrentProfessorId={setCurrentProfessorId} setShowResults={setShowResults} />;
             })}
         </div>
     );

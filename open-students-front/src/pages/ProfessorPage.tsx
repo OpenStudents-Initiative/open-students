@@ -1,12 +1,11 @@
 import { Box, Typography } from "@mui/material";
-import ProfessorCard from "../components/ProfessorCard.tsx"
-import ReviewCard from "../components/ReviewCard.tsx"
+import ProfessorCard from "../components/professorCard/ProfessorCard.tsx"
+import ReviewCard from "../components/reviewCard/ReviewCard.tsx"
 import Grid from '@mui/material/Grid';
 import { useEffect, useState } from "react";
 import { supabase } from '../App.tsx'
 import { useIntl } from 'react-intl';
-import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
-import MakeReviewPopup from "../components/MakeReviewPopup.tsx";
+import CreateReview from "../components/createReview/CreateReview.tsx";
 
 export default function ProfessorPage({ id: professorId }: { id: string }) {
 
@@ -19,7 +18,7 @@ export default function ProfessorPage({ id: professorId }: { id: string }) {
         loadingUniversity: intl.formatMessage({ id: "loadingUniversity" }),
         loadingDependency: intl.formatMessage({ id: "loadingDependency" }),
     };
- 
+
 
     const [professor, setProfessor] = useState({
         name: textConstants.loadingProfessor,
@@ -34,11 +33,11 @@ export default function ProfessorPage({ id: professorId }: { id: string }) {
     const [isReviewPopupOpen, setReviewPopupOpen] = useState(false);
 
     const handleOpenReviewPopup = () => {
-      setReviewPopupOpen(true);
+        setReviewPopupOpen(true);
     };
-  
+
     const handleCloseReviewPopup = () => {
-      setReviewPopupOpen(false);
+        setReviewPopupOpen(false);
     };
 
 
@@ -46,10 +45,10 @@ export default function ProfessorPage({ id: professorId }: { id: string }) {
 
     useEffect(() => {
         async function fetchData() {
-            const professor = await getProfessor(professorId);
+            const professor = await fetchProfessor(professorId);
             setProfessor(professor);
 
-            const reviews = await getReviews(professorId);
+            const reviews = await fetchReviews(professorId);
             setReviews(reviews);
         }
 
@@ -92,7 +91,7 @@ export default function ProfessorPage({ id: professorId }: { id: string }) {
                                 </Typography>
                             </Box>
                     }
-                    <MakeReviewPopup open={isReviewPopupOpen} onClose={handleCloseReviewPopup} />
+                    <CreateReview open={isReviewPopupOpen} onClose={handleCloseReviewPopup} professor={{ id: professorId, ...professor }} />
                 </Grid>
             </Grid>
         </Box>
@@ -100,7 +99,7 @@ export default function ProfessorPage({ id: professorId }: { id: string }) {
 };
 
 
-async function getProfessor(id: string) {
+async function fetchProfessor(id: string) {
     let { data: professor, error } = await supabase
         .from('professor_information')
         .select("*")
@@ -115,7 +114,7 @@ async function getProfessor(id: string) {
 }
 
 
-async function getReviews(id: string) {
+async function fetchReviews(id: string) {
     let { data: reviews, error } = await supabase
         .from('professor_reviews')
         .select("*")

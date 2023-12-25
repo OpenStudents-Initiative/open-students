@@ -5,8 +5,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import { COLORS } from '../styles/colors';
 import { Nav } from 'react-bootstrap';
-import { SearchBar } from './SearchBar';
-import { SearchResultsList } from './SearchResultsList';
+import SearchBar from './searchBar/SearchBar';
+import { SearchResultsList } from './searchBar/SearchResultsList';
 import { useState } from "react";
 import { Typography } from "@mui/material";
 import "../styles/Header.css";
@@ -20,26 +20,19 @@ export default function Header({ setCurrentProfessorId }: { setCurrentProfessorI
         openStudents: intl.formatMessage({ id: 'openStudents' }),
     };
 
+    // TODO: Lógica de login y usuarios
     const text = localStorage.getItem("accUserName")?.split(' ')[0] ?? textConstants.login;
     const link = localStorage.getItem("accUserName") ? `/user` : `/Register`;
 
     const [results, setResults] = useState<{ name: string, id: string }[]>([]);
     const [showResults, setShowResults] = useState(false);
 
-    const LogoOpenStudents = () =>
-        <Toolbar>
-            <Nav.Link style={{ textDecoration: 'none' }} href="/">
-                <Typography variant="h5" style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                    {textConstants.openStudents}
-                </Typography>
-            </Nav.Link>
-        </Toolbar>
 
     return (
         <Box className="header">
             <AppBar position="static" sx={{ backgroundColor: "white" }}>
                 <Toolbar className="first-row">
-                    <LogoOpenStudents />
+                    <LogoOpenStudents openStudentsText={textConstants.openStudents} />
                     <div className="search-bar-container">
                         <SearchBar results={results} setResults={setResults} setShowResults={setShowResults} />
                         {showResults && <SearchResultsList results={results} setCurrentProfessorId={setCurrentProfessorId} setShowResults={setShowResults} />}
@@ -52,24 +45,29 @@ export default function Header({ setCurrentProfessorId }: { setCurrentProfessorI
 }
 
 
-const LoginButton = ({ text, link }: { text: string, link: string }) => {
-
-    return (
-
-        <Nav.Link style={{ textDecoration: 'none' }} href={link}>
-            <Button
-                style={{
-                    borderRadius: 20,
-                    padding: "5px 15px",
-                    backgroundColor: COLORS.primary,
-                    fontSize: "15px",
-                    textTransform: "none",
-                }}
-                variant="contained"
-            >
-                {text}
-            </Button>
+const LogoOpenStudents = ({ openStudentsText }: { openStudentsText: string }) =>
+    <Toolbar>
+        <Nav.Link style={{ textDecoration: 'none' }} href="/">
+            <Typography variant="h5" style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                {openStudentsText}
+            </Typography>
         </Nav.Link>
-    )
-}
+    </Toolbar>
+
+
+const LoginButton = ({ text, link }: { text: string, link: string }) => <Nav.Link style={{ textDecoration: 'none' }} href={link}>
+    <Button
+        style={{
+            borderRadius: 20,
+            padding: "5px 15px",
+            backgroundColor: COLORS.primary,
+            fontSize: "15px",
+            textTransform: "none",
+        }}
+        variant="contained"
+    >
+        {text}
+    </Button>
+</Nav.Link>
+
 

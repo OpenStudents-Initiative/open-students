@@ -5,11 +5,11 @@
     "loadingProfessor": "Cargando profesor...",
     "loadingUniversity": "Cargando universidad...",
     "loadingDependency": "Cargando facultad...",
-    "generalRatingText": "Calificación general:",
-    "difficultyLevelText": "Nivel de dificultad:",
-    "courseGradeText": "Calificación obtenida:",
-    "wouldEnrollAgainText": "Volvería a tomar clase con este profesor:",
-    "semesterText": "Semestre:",
+
+    "wouldEnrollAgainText": "El estudiante sí volvería a tomar clase con este profesor.",
+    "wouldNotEnrollAgainText": "El estudiante no volvería a tomar clase con este profesor.",
+
+    "semesterText": "Semestre",
     "veryDifficult": "Muy difícil",
     "difficult": "Difícil",
     "average": "Dificultad promedio",
@@ -18,8 +18,17 @@
     "averageRatingText": "Rating promedio:",
     "averageCourseGradeText": "Calificación promedio obtenida:",
     "averageDifficultyLevelText": "Nivel de dificultad promedio:",
-    "writeReviewText": "Escribe una reseña",
+    "createReviewText": "Escribe una reseña",
     "searchProfessors": "Buscar profesores",
     "noReviewsYet": "Aún no hay reseñas para este profesor :(",
-    "beTheFirstReview": "¡Sé el primero en dejar una reseña!"
+    "beTheFirstReview": "¡Sé el primero en dejar una reseña!",
+    "writeAReviewFor": "Escribe una reseña para ",
+    "wouldTakeAgainText": "Sí volvería a tomar clase con este profesor",
+    "wouldNotTakeAgainText": "No volvería a tomar clase con este profesor",
+    "obtainedGradeText": "Calificación obtenida en el curso",
+    "selectClassText": "Seleccionar curso",
+    "selectPeriodText": "Seleccionar periodo",
+    "submitReviewText": "Publicar Reseña",
+    "difficulty": "Dificultad",
+    "rating": "Rating"
 }

@@ -22,7 +22,7 @@ export default function Footer() {
 
 const boxStyle = {
     backgroundColor: COLORS.dark,
-    
+
     position: 'fixed',
     bottom: 0,
 
