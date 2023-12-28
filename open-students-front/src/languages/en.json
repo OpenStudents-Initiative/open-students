@@ -5,10 +5,8 @@
     "loadingProfessor": "Loading professor...",
     "loadingUniversity": "Loading university...",
     "loadingDependency": "Loading faculty...",
-
     "wouldEnrollAgainText": "The student would enroll in this professor's class again.",
     "wouldNotEnrollAgainText": "The student would not enroll in this professor's class again.",
-
     "semesterText": "Semester",
     "veryDifficult": "Very Difficult",
     "difficult": "Difficult",
@@ -30,5 +28,11 @@
     "selectPeriodText": "Select period",
     "submitReviewText": "Submit Review",
     "difficulty": "Difficulty",
-    "rating": "Rating"
+    "rating": "Rating",
+    "textfieldCannotBeEmpty": "Please write a review of at least 5 characters.",
+    "minimumRating": "The minimum rating is 1 star.",
+    "difficultyMustBeSelected": "Please select a difficulty level.",
+    "minimumGradeError": "The minimum grade is 1.5.",
+    "courseNotSelectedError": "Please select a course.",
+    "periodNotSelectedError": "Please select a period."
 }
