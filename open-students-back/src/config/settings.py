@@ -11,8 +11,8 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
     DB_HOST: str = os.getenv("DB_HOST")
     DB_PORT: str = os.getenv("DB_PORT")
-    
+    PROJECT_NAME: str = os.getenv("PROJECT_NAME")
+    API_V1_STR: str = os.getenv("API_V1_STR")
+
     class Config:
         case_sensitive = True
-
-
