@@ -12,5 +12,8 @@
     "**/flow-typed": true,
     "**/flow-typed-tmp": true,
     "**/ios": true
+  },
+  "files.exclude": {
+    "**/__pycache__": true
   }
 }
