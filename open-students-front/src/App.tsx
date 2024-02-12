@@ -1,12 +1,11 @@
 /* eslint-disable */
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Header from "./components/Header.tsx";
 import Footer from "./components/Footer.tsx";
 import ProfessorPage from "./pages/ProfessorPage.tsx";
 import "./styles/App.css";
 import { createClient } from "@supabase/supabase-js";
-import { Session } from "@supabase/gotrue-js";
 import AuthPage from "./pages/AuthPage.tsx";
 import {
   AUTH_ROUTE,
