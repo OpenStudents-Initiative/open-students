@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dockrun": "docker run -p 3000:80 --rm open-students-front:latest",
+    "dockbuild": "docker build -t open-students-front:latest ."
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
