@@ -1,4 +1,12 @@
-## Professor Reviews API
+# Professor Reviews Mock API
+
+## Running the application
+
+```
+npm start
+```
+
+The app will run at port 3000
 
 **Available Endpoints:**
 
