@@ -19,6 +19,7 @@
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.39.1",
     "add": "^2.0.6",
+    "axios": "^1.6.7",
     "mui": "^0.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
