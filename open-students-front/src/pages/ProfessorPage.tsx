@@ -8,6 +8,8 @@ import { useIntl } from "react-intl";
 import CreateReview from "../components/createReview/CreateReview.tsx";
 import { currentProfessorIdState } from "../atoms/defaultAtoms.ts";
 import { useRecoilValue } from "recoil";
+import axios from "axios";
+import { apiUrl } from "../config.ts";
 
 interface Review {
   id: string;
@@ -64,7 +66,7 @@ export default function ProfessorPage() {
       const reviews = await fetchReviews(professorId);
       const sortedReviews = reviews.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
       setReviews(sortedReviews);
     }
@@ -127,33 +129,21 @@ export default function ProfessorPage() {
 }
 
 async function fetchProfessor(id: string) {
-  const { data: professor, error } = await supabase
-    .from("professor_information")
-    .select("*")
-    .eq("id", id);
-
-  if (error) {
-    console.error("Error fetching professor:", error);
-    return [];
+  try {
+    const professor = await axios.get(`${apiUrl}/professors/${id}`);
+    return professor;
+  } catch (e) {
+    console.error(`Error fetching professor: ${e}`);
+    return null; // Better to return null here, also, 404 should end here too
   }
-
-  if (!professor) return [];
-
-  return professor[0];
 }
 
 async function fetchReviews(id: string) {
-  const { data: reviews, error } = await supabase
-    .from("professor_reviews")
-    .select("*")
-    .eq("professorId", id);
-
-  if (error) {
-    console.error("Error fetching reviews:", error);
+  try {
+    const reviews = await axios.get(`${apiUrl}/professors/${id}/reviews`);
+    return reviews;
+  } catch (e) {
+    console.error(`Error fetching reviews: ${e}`);
     return [];
   }
-
-  if (!reviews) return [];
-
-  return reviews;
 }

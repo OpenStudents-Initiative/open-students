@@ -18,6 +18,8 @@ import CreateReviewCourses from "./CreateReviewCourses.tsx";
 import CreateReviewPeriods from "./CreateReviewPeriods.tsx";
 import { useRecoilValue } from "recoil";
 import { sessionState } from "../../atoms/defaultAtoms.ts";
+import axios from "axios";
+import { apiUrl } from "../../config.ts";
 
 interface CreateReviewProps {
   open: boolean;
@@ -228,14 +230,10 @@ interface postReviewProps {
 }
 
 const postReview = async (reviewObject: postReviewProps) => {
-  const { data, error } = await supabase
-    .from("review")
-    .insert([reviewObject])
-    .select();
-
-  if (error || !data) {
-    console.error("Error inserting review: ", error);
-    return;
+  try {
+    axios.post(`${apiUrl}/reviews`, reviewObject);
+  } catch (error) {
+    console.error(`Error inserting review: ${error}`);
   }
 };
 
@@ -257,7 +255,7 @@ const fetchCourses = async (id: string) => {
 
   const courses: Course[] = received_courses.sort(
     (course1: Course, course2: Course) =>
-      course1.courseName.localeCompare(course2.courseName)
+      course1.courseName.localeCompare(course2.courseName),
   );
 
   return courses;

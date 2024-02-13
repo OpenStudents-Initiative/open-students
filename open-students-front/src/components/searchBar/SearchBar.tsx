@@ -3,6 +3,8 @@ import { FaSearch } from "react-icons/fa";
 import { supabase } from "../../App";
 import "../../styles/SearchBar.css";
 import { useIntl } from "react-intl";
+import axios from "axios";
+import { apiUrl } from "../../config";
 
 interface SearchBarProps {
   results: Array<{ name: string; id: string }>;
@@ -57,40 +59,35 @@ export default SearchBar;
 async function fetchProfessorNames(
   setProfessorNames: React.Dispatch<
     React.SetStateAction<{ name: string; id: string }[]>
-  >
+  >,
 ) {
-  const { data: professorNames, error } = await supabase
-    .from("professor")
-    .select("name, id");
-
-  console.log("Indeed fetching professor names");
-  console.log(professorNames);
-
-  if (error) {
-    console.error("Error fetching professor names: ", error);
-    return;
+  try {
+    const professorNames: { name: string; id: string }[] = await axios.get(
+      `${apiUrl}/professors`,
+      {
+        params: {
+          keys: "name,id",
+        },
+      },
+    );
+    setProfessorNames(professorNames);
+  } catch (e) {
+    console.error(`Error fetching professor names: ${e}`);
   }
-
-  if (!professorNames) {
-    console.error("No professor names found");
-    return;
-  }
-
-  setProfessorNames(professorNames);
 }
 
 function professorNamesToStrList(
   input: string,
-  professorNames: { name: string; id: string }[]
+  professorNames: { name: string; id: string }[],
 ) {
   const profs: { name: string; id: string }[] = professorNames
     .filter(({ name }: { name: string; id: string }) =>
-      name.toLowerCase().includes(input.toLowerCase())
+      name.toLowerCase().includes(input.toLowerCase()),
     )
     .sort(
       (a: { name: string; id: string }, b: { name: string; id: string }) =>
         a.name.toLowerCase().indexOf(input.toLowerCase()) -
-        b.name.toLowerCase().indexOf(input.toLowerCase())
+        b.name.toLowerCase().indexOf(input.toLowerCase()),
     );
 
   return profs;
