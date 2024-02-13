@@ -238,50 +238,37 @@ const postReview = async (reviewObject: postReviewProps) => {
 };
 
 const fetchCourses = async (id: string) => {
-  const { data: received_courses, error } = await supabase
-    .from("professor_courses")
-    .select("*")
-    .eq("professorId", id);
-
-  if (error) {
-    console.error("Error fetching courses: ", error);
-    return [];
+  let courses: Course[];
+  try {
+    courses = await axios.get(`${apiUrl}/professors/${id}/courses`);
+  } catch (e) {
+    console.error(`Error fetching courses: ${e}`);
+    return;
   }
 
-  if (!received_courses) {
+  if (!courses) {
     console.error("No courses found");
     return [];
   }
 
-  const courses: Course[] = received_courses.sort(
+  const sortedCourses: Course[] = courses.sort(
     (course1: Course, course2: Course) =>
       course1.courseName.localeCompare(course2.courseName),
   );
 
-  return courses;
+  return sortedCourses;
 };
 
 const fetchPeriods = async () => {
-  const { data: academic_period, error } = await supabase
-    .from("academic_period")
-    .select("name, id");
-
-  console.log("Indeed fetching periods");
-  console.log(academic_period);
-
-  if (error) {
-    console.error("Error fetching periods: ", error);
+  let periods: Period[];
+  try {
+    periods = await axios.get(`${apiUrl}/periods`);
+  } catch (e) {
+    console.error(`Error fetching periods: ${e}`);
     return [];
   }
 
-  if (!academic_period) {
-    console.error("No periods found");
-    return [];
-  }
-
-  const periods: Period[] = academic_period.sort(comparePeriods);
-
-  return periods;
+  return periods.sort(comparePeriods);
 };
 
 const comparePeriods = (period1: Period, period2: Period) => {
