@@ -2,6 +2,8 @@ import express from "express";
 
 const app = express();
 
+const TOKEN = "UkVQT1JUSUZUSElTSVNPTlBST0RVQ1RJT04=";
+
 const professors = [
   {
     name: "John Doe",
@@ -135,6 +137,13 @@ app.post("/reviews", (req, res) => {
     return res.status(400).send("Missing required fields in review data");
   }
 
+  if (
+    !req.headers.authorization ||
+    req.headers.authorization.split(" ")[1] != TOKEN
+  ) {
+    return res.status(401).send("Missing identity for the following action");
+  }
+
   // Generate a unique ID for the new review
   const newReviewId = generateUniqueReviewId();
 
@@ -161,6 +170,33 @@ app.post("/reviews", (req, res) => {
 
   // Respond with a success status code (201 Created) and the newly created review
   res.status(201).json(newReview);
+});
+
+app.post("/login", (req, res) => {
+  const { password } = req.body;
+  const email = req.body.username;
+
+  // Validate required fields
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: username and password" });
+  }
+
+  // You can validate username and password length or format here (optional)
+
+  // Placeholder response object (customize as needed)
+  const userData = {
+    token: TOKEN,
+    userInfo: {
+      uuid: crypto.randomUUID(),
+      name: "Testing User",
+      email: email,
+    },
+  };
+
+  // Respond with the placeholder object
+  res.json(userData);
 });
 
 app.listen(3000, () => {
