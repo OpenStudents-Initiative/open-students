@@ -135,16 +135,6 @@ app.get("/professors/:id/courses", (req, res) => {
 
 app.post("/reviews", (req, res) => {
   // Validate data based on the provided review schema
-  console.log(req.body);
-  console.log("Course:", req.body.course);
-  console.log("Code:", req.body.code);
-  console.log("Period:", req.body.period);
-  console.log("Review:", req.body.review);
-  console.log("General Rating:", req.body.generalRating);
-  console.log("Difficulty Level:", req.body.difficultyLevel);
-  console.log("Course Grade:", req.body.courseGrade);
-  console.log("Would Enroll Again:", req.body.wouldEnrollAgain);
-  console.log("Professor ID:", req.body.professorId);
   if (
     !req.body.course ||
     !req.body.code ||
@@ -163,9 +153,6 @@ app.post("/reviews", (req, res) => {
     !req.headers.authorization ||
     req.headers.authorization.split(" ")[1] != TOKEN
   ) {
-    console.log("Full header:", req.headers.authorization);
-    console.log("Header token:", req.headers.authorization!.split(" ")[1]);
-    console.log("Real token:", TOKEN);
     return res.status(401).send("Missing identity for the following action");
   }
 
@@ -190,15 +177,11 @@ app.post("/reviews", (req, res) => {
   // Add the new review to the `reviews` array
   reviews.push(newReview);
 
-  // Log the received review for debugging purposes
-  console.log("Received new review:", newReview);
-
   // Respond with a success status code (201 Created) and the newly created review
   res.status(201).json(newReview);
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body);
   const { password } = req.body;
   const email = req.body.username;
 
