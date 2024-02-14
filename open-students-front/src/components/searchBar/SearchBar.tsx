@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { supabase } from "../../App";
 import "../../styles/SearchBar.css";
 import { useIntl } from "react-intl";
 import axios from "axios";
