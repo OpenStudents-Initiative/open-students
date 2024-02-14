@@ -13,10 +13,8 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { currentProfessorIdState } from "../atoms/defaultAtoms";
 import { AUTH_ROUTE, HOME_ROUTE, PROFILE_ROUTE } from "../utils/consts";
-import { Session } from "@supabase/supabase-js";
-import { supabase } from "../App";
 
-export default function Header({ session }: { session: Session | null }) {
+export default function Header() {
   const intl = useIntl();
   const navigate = useNavigate();
   const setCurrentProfessorId = useSetRecoilState(currentProfessorIdState);
@@ -34,8 +32,8 @@ export default function Header({ session }: { session: Session | null }) {
     account: intl.formatMessage({ id: "headerAccount" }),
   };
 
-  // TODO: Lógica de login y usuarios
-  const text = session ? textConstants.account : textConstants.login;
+  // TODO: Lógica de login y usuarios, cambiar texto si usuario loggeado
+  const text = false ? textConstants.account : textConstants.login;
   const [results, setResults] = useState<{ name: string; id: string }[]>([]);
   const [showResults, setShowResults] = useState(false);
 
@@ -47,26 +45,28 @@ export default function Header({ session }: { session: Session | null }) {
             openStudentsText={textConstants.openStudents}
             navigate={navigate}
           />
-          {session && (
-            <Box className="search-bar-container">
-              <SearchBar
-                results={results}
-                setResults={setResults}
-                setShowResults={setShowResults}
-              />
-              {showResults && (
-                <SearchResultsList
+          {
+            // TODO: Enable this once login happens
+            false && (
+              <Box className="search-bar-container">
+                <SearchBar
                   results={results}
-                  setCurrentProfessorId={setCurrentProfessorId}
+                  setResults={setResults}
                   setShowResults={setShowResults}
                 />
-              )}
-            </Box>
-          )}
+                {showResults && (
+                  <SearchResultsList
+                    results={results}
+                    setCurrentProfessorId={setCurrentProfessorId}
+                    setShowResults={setShowResults}
+                  />
+                )}
+              </Box>
+            )
+          }
           <LoginButton
             text={text}
             navigate={navigate}
-            session={session}
             anchorEl={anchorEl}
             handleMenu={handleMenu}
             handleClose={handleClose}
@@ -99,7 +99,6 @@ const LogoOpenStudents = ({
 const LoginButton = ({
   text,
   navigate,
-  session,
   anchorEl,
   handleMenu,
   handleClose,
@@ -107,7 +106,6 @@ const LoginButton = ({
 }: {
   text: string | undefined;
   navigate: NavigateFunction;
-  session: Session | null;
   anchorEl: HTMLElement | null;
   handleMenu: (event: React.MouseEvent<HTMLElement>) => void;
   handleClose: () => void;
@@ -124,7 +122,8 @@ const LoginButton = ({
       }}
       variant="contained"
       onClick={(e) => {
-        if (session && session.user) {
+        // TODO: Handle the menu once the user is logged in
+        if (false) {
           handleMenu(e);
           // Show list of options with logout and profile
         } else {
@@ -158,8 +157,7 @@ const LoginButton = ({
       </MenuItem>
       <MenuItem
         onClick={() => {
-          supabase.auth.signOut();
-          handleClose();
+          // TODO: Replace with new OAuth2 signout
           navigate(HOME_ROUTE);
         }}
       >
