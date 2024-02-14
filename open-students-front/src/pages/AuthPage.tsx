@@ -48,7 +48,7 @@ export default function AuthPage() {
         setError("Login is invalid");
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
       setError("Login is invalid");
     }
   };

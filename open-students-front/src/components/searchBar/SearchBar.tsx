@@ -68,7 +68,6 @@ async function fetchProfessorNames(
         },
       })
     ).data;
-    console.log(professorNames);
     setProfessorNames(professorNames);
   } catch (e) {
     console.error(`Error fetching professor names: ${e}`);

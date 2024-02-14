@@ -19,7 +19,6 @@ export const SearchResult = ({
     <div
       className="search-result"
       onClick={() => {
-        console.log("i got click, res? ", result);
         setCurrentProfessorId(result.id);
         setShowResults(false);
       }}

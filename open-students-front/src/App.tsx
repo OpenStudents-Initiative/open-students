@@ -20,10 +20,6 @@ export default function App() {
   const authenticated = isAuthenticated();
   const currentProfessorId = useRecoilValue(currentProfessorIdState);
 
-  useEffect(() => {
-    console.log(currentProfessorId);
-  }, [currentProfessorId]);
-
   return (
     <div className="App">
       <Header />
