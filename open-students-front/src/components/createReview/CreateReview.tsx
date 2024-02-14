@@ -19,7 +19,7 @@ import axios from "axios";
 import { apiUrl } from "../../config.ts";
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
-import { UserSessionData } from "../../utils/types.ts";
+import { CreatedReview, UserSessionData } from "../../utils/types.ts";
 
 interface CreateReviewProps {
   open: boolean;
@@ -28,8 +28,9 @@ interface CreateReviewProps {
 }
 
 interface Course {
+  id: string;
   professorId: string;
-  courseId: string;
+  code: string;
   courseName: string;
 }
 
@@ -73,23 +74,23 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
   const [courses, setCourses] = useState<string[]>([]);
   const [periods, setPeriods] = useState<string[]>([]);
 
-  const [periodsMap, setPeriodsMap] = useState<Map<string, string>>(new Map());
-  const [coursesMap, setCoursesMap] = useState<Map<string, string>>(new Map());
+  const [periodsMap, setPeriodsMap] = useState<Map<string, Period>>(new Map());
+  const [coursesMap, setCoursesMap] = useState<Map<string, Course>>(new Map());
 
   useEffect(() => {
     async function fetchData() {
       const courses: Course[] = await fetchCourses(professor.id);
-      const preCoursesMap = new Map<string, string>();
+      const preCoursesMap = new Map<string, Course>();
       for (const course of courses) {
-        preCoursesMap.set(course.courseName, course.courseId);
+        preCoursesMap.set(course.courseName, course);
       }
       setCoursesMap(preCoursesMap);
       setCourses(courses.map((course: Course) => course.courseName));
 
       const periods: Period[] = await fetchPeriods();
-      const prePeriodsMap = new Map<string, string>();
+      const prePeriodsMap = new Map<string, Period>();
       for (const period of periods) {
-        prePeriodsMap.set(period.name, period.id);
+        prePeriodsMap.set(period.name, period);
       }
       setPeriodsMap(prePeriodsMap);
       setPeriods(periods.map((period: Period) => period.name));
@@ -113,17 +114,16 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
       return;
     }
 
-    const reviewObject: postReviewProps = {
-      created_at: new Date().toISOString(),
+    const reviewObject: CreatedReview = {
+      course: coursesMap.get(selectedCourse)!.id,
+      code: coursesMap.get(selectedCourse)!.code,
+      period: periodsMap.get(selectedPeriod)!.id,
       review: reviewText,
-      general_rating: professorRating,
-      difficulty_level: difficultyRating,
-      course_grade: obtainedGrade,
-      would_enroll_again: wouldTakeAgain,
-      fk_professor: professor.id,
-      fk_course: String(coursesMap.get(selectedCourse)),
-      fk_academic_period: String(periodsMap.get(selectedPeriod)),
-      creator: user?.uuid || "",
+      generalRating: professorRating,
+      difficultyLevel: difficultyRating,
+      courseGrade: obtainedGrade,
+      wouldEnrollAgain: wouldTakeAgain,
+      professorId: professor.id,
     };
 
     if (authHeader) {
@@ -221,27 +221,11 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 
 export default CreateReview;
 
-interface postReviewProps {
-  created_at: string;
-  review: string;
-  general_rating: number;
-  difficulty_level: number;
-  course_grade: number;
-  would_enroll_again: boolean;
-  fk_professor: string;
-  fk_course: string;
-  fk_academic_period: string;
-  creator: string;
-}
-
-const postReview = async (
-  reviewObject: postReviewProps,
-  authHeader: string,
-) => {
+const postReview = async (reviewObject: CreatedReview, authHeader: string) => {
   try {
     axios.post(`${apiUrl}/reviews`, reviewObject, {
       headers: {
-        Authorization: `Bearer ${authHeader}`,
+        Authorization: authHeader,
       },
     });
   } catch (error) {

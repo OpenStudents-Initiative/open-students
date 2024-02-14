@@ -12,10 +12,17 @@ import {
   PROFILE_ROUTE,
 } from "./utils/consts.ts";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
+import { useRecoilValue } from "recoil";
+import { currentProfessorIdState } from "./atoms/defaultAtoms.ts";
 
 export default function App() {
   const isAuthenticated = useIsAuthenticated();
   const authenticated = isAuthenticated();
+  const currentProfessorId = useRecoilValue(currentProfessorIdState);
+
+  useEffect(() => {
+    console.log(currentProfessorId);
+  }, [currentProfessorId]);
 
   return (
     <div className="App">
@@ -24,7 +31,9 @@ export default function App() {
       <Routes>
         <Route
           path="/"
-          element={authenticated ? <ProfessorPage /> : <div>Landing page</div>}
+          element={
+            currentProfessorId ? <ProfessorPage /> : <div>Landing page</div>
+          }
         />
         <Route path={AUTH_ROUTE} element={<AuthPage />} />
         {authenticated && (

@@ -61,7 +61,7 @@ export default function ProfessorPage() {
     }
 
     if (professorId) fetchData();
-  }, [professorId, isReviewPopupOpen]);
+  }, [professorId]);
 
   return (
     <Box

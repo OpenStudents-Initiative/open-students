@@ -27,7 +27,7 @@ export default function AuthPage() {
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await axios.postForm(`${apiUrl}/login`, {
+      const response = await axios.post(`${apiUrl}/login`, {
         username: email, // No, this is not a bad logic error, standard says to use username key
         password: password,
       });
