@@ -13,9 +13,13 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import { currentProfessorIdState } from "../atoms/defaultAtoms";
 import { AUTH_ROUTE, HOME_ROUTE, PROFILE_ROUTE } from "../utils/consts";
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
+import useSignOut from "react-auth-kit/hooks/useSignOut";
 
 export default function Header() {
   const intl = useIntl();
+  const userAuthenticated = useIsAuthenticated()();
+  const signOut = useSignOut();
   const navigate = useNavigate();
   const setCurrentProfessorId = useSetRecoilState(currentProfessorIdState);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -32,8 +36,7 @@ export default function Header() {
     account: intl.formatMessage({ id: "headerAccount" }),
   };
 
-  // TODO: Lógica de login y usuarios, cambiar texto si usuario loggeado
-  const text = false ? textConstants.account : textConstants.login;
+  const text = userAuthenticated ? textConstants.account : textConstants.login;
   const [results, setResults] = useState<{ name: string; id: string }[]>([]);
   const [showResults, setShowResults] = useState(false);
 
@@ -45,29 +48,28 @@ export default function Header() {
             openStudentsText={textConstants.openStudents}
             navigate={navigate}
           />
-          {
-            // TODO: Enable this once login happens
-            false && (
-              <Box className="search-bar-container">
-                <SearchBar
+          {userAuthenticated && (
+            <Box className="search-bar-container">
+              <SearchBar
+                results={results}
+                setResults={setResults}
+                setShowResults={setShowResults}
+              />
+              {showResults && (
+                <SearchResultsList
                   results={results}
-                  setResults={setResults}
+                  setCurrentProfessorId={setCurrentProfessorId}
                   setShowResults={setShowResults}
                 />
-                {showResults && (
-                  <SearchResultsList
-                    results={results}
-                    setCurrentProfessorId={setCurrentProfessorId}
-                    setShowResults={setShowResults}
-                  />
-                )}
-              </Box>
-            )
-          }
+              )}
+            </Box>
+          )}
           <LoginButton
             text={text}
             navigate={navigate}
             anchorEl={anchorEl}
+            signOut={signOut}
+            userAuthenticated={userAuthenticated}
             handleMenu={handleMenu}
             handleClose={handleClose}
             intl={intl}
@@ -99,14 +101,18 @@ const LogoOpenStudents = ({
 const LoginButton = ({
   text,
   navigate,
+  userAuthenticated,
   anchorEl,
+  signOut,
   handleMenu,
   handleClose,
   intl,
 }: {
   text: string | undefined;
   navigate: NavigateFunction;
+  userAuthenticated: boolean;
   anchorEl: HTMLElement | null;
+  signOut: () => void;
   handleMenu: (event: React.MouseEvent<HTMLElement>) => void;
   handleClose: () => void;
   intl: IntlShape;
@@ -123,7 +129,7 @@ const LoginButton = ({
       variant="contained"
       onClick={(e) => {
         // TODO: Handle the menu once the user is logged in
-        if (false) {
+        if (userAuthenticated) {
           handleMenu(e);
           // Show list of options with logout and profile
         } else {
@@ -157,7 +163,7 @@ const LoginButton = ({
       </MenuItem>
       <MenuItem
         onClick={() => {
-          // TODO: Replace with new OAuth2 signout
+          signOut();
           navigate(HOME_ROUTE);
         }}
       >
