@@ -240,7 +240,7 @@ const postReview = async (reviewObject: postReviewProps) => {
 const fetchCourses = async (id: string) => {
   let courses: Course[];
   try {
-    courses = await axios.get(`${apiUrl}/professors/${id}/courses`);
+    courses = (await axios.get(`${apiUrl}/professors/${id}/courses`)).data;
   } catch (e) {
     console.error(`Error fetching courses: ${e}`);
     return;
@@ -262,7 +262,7 @@ const fetchCourses = async (id: string) => {
 const fetchPeriods = async () => {
   let periods: Period[];
   try {
-    periods = await axios.get(`${apiUrl}/periods`);
+    periods = (await axios.get(`${apiUrl}/periods`)).data;
   } catch (e) {
     console.error(`Error fetching periods: ${e}`);
     return [];

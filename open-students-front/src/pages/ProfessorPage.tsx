@@ -130,7 +130,7 @@ export default function ProfessorPage() {
 
 async function fetchProfessor(id: string) {
   try {
-    const professor = await axios.get(`${apiUrl}/professors/${id}`);
+    const professor = (await axios.get(`${apiUrl}/professors/${id}`)).data;
     return professor;
   } catch (e) {
     console.error(`Error fetching professor: ${e}`);
@@ -140,7 +140,8 @@ async function fetchProfessor(id: string) {
 
 async function fetchReviews(id: string) {
   try {
-    const reviews = await axios.get(`${apiUrl}/professors/${id}/reviews`);
+    const reviews = (await axios.get(`${apiUrl}/professors/${id}/reviews`))
+      .data;
     return reviews;
   } catch (e) {
     console.error(`Error fetching reviews: ${e}`);

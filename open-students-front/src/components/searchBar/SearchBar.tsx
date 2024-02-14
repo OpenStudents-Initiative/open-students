@@ -62,14 +62,13 @@ async function fetchProfessorNames(
   >,
 ) {
   try {
-    const professorNames: { name: string; id: string }[] = await axios.get(
-      `${apiUrl}/professors`,
-      {
+    const professorNames: { name: string; id: string }[] = (
+      await axios.get(`${apiUrl}/professors`, {
         params: {
           keys: "name,id",
         },
-      },
-    );
+      })
+    ).data;
     setProfessorNames(professorNames);
   } catch (e) {
     console.error(`Error fetching professor names: ${e}`);
