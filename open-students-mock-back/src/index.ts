@@ -1,11 +1,20 @@
+import bodyParser from "body-parser";
 import express from "express";
+import cors from "cors";
 
 const app = express();
 
-const TOKEN = "UkVQT1JUSUZUSElTSVNPTlBST0RVQ1RJT04=";
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use((cors as (options: cors.CorsOptions) => express.RequestHandler)({}));
+
+// Testing JWT
+const TOKEN =
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MDc5MjUwMDgsImV4cCI6MTczOTQ2MTAwOCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.Pr24VsJ0XpVUgZ_o1mSNWiJK7J811XfrhiMqRkkbPcQ";
 
 const professors = [
   {
+    id: "1",
     name: "John Doe",
     university: "Universidad de los Andes",
     dependency: "Computer Science",
@@ -14,6 +23,7 @@ const professors = [
     averageDifficultyLevel: 5.0,
   },
   {
+    id: "2",
     name: "Jane Smith",
     university: "Universidad de los Andes",
     dependency: "Mathematics",
@@ -60,13 +70,15 @@ const reviews = [
 
 const courses = [
   {
+    id: "1",
     professorId: "1",
-    courseId: "ISIS-1221",
+    code: "ISIS-1221",
     courseName: "Introduction to Programming",
   },
   {
+    id: "2",
     professorId: "2",
-    courseId: "ISIS-1225",
+    code: "ISIS-1225",
     courseName: "Data Structures and Algorithms",
   },
 ];
@@ -101,7 +113,7 @@ app.get("/periods", (req, res) => {
 });
 
 app.get("/professors/:id", (req, res) => {
-  const professor = professors.find((p) => p.name === req.params.id);
+  const professor = professors.find((p) => p.id === req.params.id);
   if (professor) {
     res.json(professor);
   } else {
@@ -123,6 +135,16 @@ app.get("/professors/:id/courses", (req, res) => {
 
 app.post("/reviews", (req, res) => {
   // Validate data based on the provided review schema
+  console.log(req.body);
+  console.log("Course:", req.body.course);
+  console.log("Code:", req.body.code);
+  console.log("Period:", req.body.period);
+  console.log("Review:", req.body.review);
+  console.log("General Rating:", req.body.generalRating);
+  console.log("Difficulty Level:", req.body.difficultyLevel);
+  console.log("Course Grade:", req.body.courseGrade);
+  console.log("Would Enroll Again:", req.body.wouldEnrollAgain);
+  console.log("Professor ID:", req.body.professorId);
   if (
     !req.body.course ||
     !req.body.code ||
@@ -131,7 +153,7 @@ app.post("/reviews", (req, res) => {
     !req.body.generalRating ||
     !req.body.difficultyLevel ||
     !req.body.courseGrade ||
-    !req.body.wouldEnrollAgain ||
+    req.body.wouldEnrollAgain === undefined ||
     !req.body.professorId
   ) {
     return res.status(400).send("Missing required fields in review data");
@@ -141,6 +163,9 @@ app.post("/reviews", (req, res) => {
     !req.headers.authorization ||
     req.headers.authorization.split(" ")[1] != TOKEN
   ) {
+    console.log("Full header:", req.headers.authorization);
+    console.log("Header token:", req.headers.authorization!.split(" ")[1]);
+    console.log("Real token:", TOKEN);
     return res.status(401).send("Missing identity for the following action");
   }
 
@@ -173,6 +198,7 @@ app.post("/reviews", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  console.log(req.body);
   const { password } = req.body;
   const email = req.body.username;
 
