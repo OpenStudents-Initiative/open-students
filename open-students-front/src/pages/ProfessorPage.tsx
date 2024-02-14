@@ -3,27 +3,13 @@ import ProfessorCard from "../components/professorCard/ProfessorCard.tsx";
 import ReviewCard from "../components/reviewCard/ReviewCard.tsx";
 import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
-import { supabase } from "../App.tsx";
 import { useIntl } from "react-intl";
 import CreateReview from "../components/createReview/CreateReview.tsx";
 import { currentProfessorIdState } from "../atoms/defaultAtoms.ts";
 import { useRecoilValue } from "recoil";
 import axios from "axios";
 import { apiUrl } from "../config.ts";
-
-interface Review {
-  id: string;
-  course: string;
-  code: string;
-  period: string;
-  createdAt: string;
-  review: string;
-  generalRating: number;
-  difficultyLevel: number;
-  courseGrade: number;
-  wouldEnrollAgain: boolean;
-  professorId: string;
-}
+import { Professor, Review } from "../utils/types.ts";
 
 export default function ProfessorPage() {
   const intl = useIntl();
@@ -37,7 +23,7 @@ export default function ProfessorPage() {
     loadingDependency: intl.formatMessage({ id: "loadingDependency" }),
   };
 
-  const [professor, setProfessor] = useState({
+  const [professor, setProfessor] = useState<Professor>({
     name: textConstants.loadingProfessor,
     university: textConstants.loadingUniversity,
     dependency: textConstants.loadingDependency,
@@ -61,7 +47,10 @@ export default function ProfessorPage() {
   useEffect(() => {
     async function fetchData() {
       const professor = await fetchProfessor(professorId);
-      setProfessor(professor);
+
+      if (professor) {
+        setProfessor(professor);
+      }
 
       const reviews = await fetchReviews(professorId);
       const sortedReviews = reviews.sort(
@@ -130,7 +119,8 @@ export default function ProfessorPage() {
 
 async function fetchProfessor(id: string) {
   try {
-    const professor = (await axios.get(`${apiUrl}/professors/${id}`)).data;
+    const professor: Professor = (await axios.get(`${apiUrl}/professors/${id}`))
+      .data;
     return professor;
   } catch (e) {
     console.error(`Error fetching professor: ${e}`);
@@ -140,8 +130,9 @@ async function fetchProfessor(id: string) {
 
 async function fetchReviews(id: string) {
   try {
-    const reviews = (await axios.get(`${apiUrl}/professors/${id}/reviews`))
-      .data;
+    const reviews: Review[] = (
+      await axios.get(`${apiUrl}/professors/${id}/reviews`)
+    ).data;
     return reviews;
   } catch (e) {
     console.error(`Error fetching reviews: ${e}`);

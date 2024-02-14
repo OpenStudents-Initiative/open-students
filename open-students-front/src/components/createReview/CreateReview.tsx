@@ -7,7 +7,6 @@ import {
   Stack,
 } from "@mui/material";
 import { useIntl } from "react-intl";
-import { supabase } from "../../App.tsx";
 import { COLORS } from "../../styles/colors.tsx";
 import CreateReviewTextField from "./CreateReviewTextField.tsx";
 import CreateReviewRating from "./CreateReviewRating.tsx";
@@ -20,6 +19,7 @@ import { useRecoilValue } from "recoil";
 import { sessionState } from "../../atoms/defaultAtoms.ts";
 import axios from "axios";
 import { apiUrl } from "../../config.ts";
+import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 
 interface CreateReviewProps {
   open: boolean;
@@ -40,6 +40,7 @@ interface Period {
 
 const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
   const intl = useIntl();
+  const authHeader = useAuthHeader();
   const textConstants = {
     writeAReviewFor: intl.formatMessage({ id: "writeAReviewFor" }),
     wouldTakeAgainText: intl.formatMessage({ id: "wouldTakeAgainText" }),
@@ -125,7 +126,11 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
       creator: session?.user?.id || "",
     };
 
-    postReview(reviewObject);
+    if (authHeader) {
+      postReview(reviewObject, authHeader);
+    } else {
+      console.error("User tried to post a review, but user is not logged in?");
+    }
 
     if (
       !(
@@ -229,9 +234,16 @@ interface postReviewProps {
   creator: string;
 }
 
-const postReview = async (reviewObject: postReviewProps) => {
+const postReview = async (
+  reviewObject: postReviewProps,
+  authHeader: string,
+) => {
   try {
-    axios.post(`${apiUrl}/reviews`, reviewObject);
+    axios.post(`${apiUrl}/reviews`, reviewObject, {
+      headers: {
+        Authorization: `Bearer ${authHeader}`,
+      },
+    });
   } catch (error) {
     console.error(`Error inserting review: ${error}`);
   }
@@ -243,7 +255,7 @@ const fetchCourses = async (id: string) => {
     courses = (await axios.get(`${apiUrl}/professors/${id}/courses`)).data;
   } catch (e) {
     console.error(`Error fetching courses: ${e}`);
-    return;
+    return [];
   }
 
   if (!courses) {
