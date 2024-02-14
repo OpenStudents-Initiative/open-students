@@ -15,11 +15,11 @@ import CreateReviewWouldTakeAgain from "./CreateReviewWouldTakeAgain.tsx";
 import CreateReviewObtainedGrade from "./CreateReviewObtainedGrade.tsx";
 import CreateReviewCourses from "./CreateReviewCourses.tsx";
 import CreateReviewPeriods from "./CreateReviewPeriods.tsx";
-import { useRecoilValue } from "recoil";
-import { sessionState } from "../../atoms/defaultAtoms.ts";
 import axios from "axios";
 import { apiUrl } from "../../config.ts";
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
+import { UserSessionData } from "../../utils/types.ts";
 
 interface CreateReviewProps {
   open: boolean;
@@ -39,6 +39,7 @@ interface Period {
 }
 
 const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
+  const user = useAuthUser<UserSessionData>();
   const intl = useIntl();
   const authHeader = useAuthHeader();
   const textConstants = {
@@ -74,7 +75,6 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 
   const [periodsMap, setPeriodsMap] = useState<Map<string, string>>(new Map());
   const [coursesMap, setCoursesMap] = useState<Map<string, string>>(new Map());
-  const session = useRecoilValue(sessionState);
 
   useEffect(() => {
     async function fetchData() {
@@ -123,7 +123,7 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
       fk_professor: professor.id,
       fk_course: String(coursesMap.get(selectedCourse)),
       fk_academic_period: String(periodsMap.get(selectedPeriod)),
-      creator: session?.user?.id || "",
+      creator: user?.uuid || "",
     };
 
     if (authHeader) {
