@@ -26,3 +26,15 @@ export interface Review {
   wouldEnrollAgain: boolean;
   professorId: string;
 }
+
+export interface CreatedReview {
+  course: string;
+  code: string;
+  period: string;
+  review: string;
+  generalRating: number;
+  difficultyLevel: number;
+  courseGrade: number;
+  wouldEnrollAgain: boolean;
+  professorId: string;
+}
