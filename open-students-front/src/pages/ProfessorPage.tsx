@@ -3,25 +3,13 @@ import ProfessorCard from "../components/professorCard/ProfessorCard.tsx";
 import ReviewCard from "../components/reviewCard/ReviewCard.tsx";
 import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
-import { supabase } from "../App.tsx";
 import { useIntl } from "react-intl";
 import CreateReview from "../components/createReview/CreateReview.tsx";
 import { currentProfessorIdState } from "../atoms/defaultAtoms.ts";
 import { useRecoilValue } from "recoil";
-
-interface Review {
-  id: string;
-  course: string;
-  code: string;
-  period: string;
-  createdAt: string;
-  review: string;
-  generalRating: number;
-  difficultyLevel: number;
-  courseGrade: number;
-  wouldEnrollAgain: boolean;
-  professorId: string;
-}
+import axios from "axios";
+import { apiUrl } from "../config.ts";
+import { Professor, Review } from "../utils/types.ts";
 
 export default function ProfessorPage() {
   const intl = useIntl();
@@ -35,7 +23,7 @@ export default function ProfessorPage() {
     loadingDependency: intl.formatMessage({ id: "loadingDependency" }),
   };
 
-  const [professor, setProfessor] = useState({
+  const [professor, setProfessor] = useState<Professor>({
     name: textConstants.loadingProfessor,
     university: textConstants.loadingUniversity,
     dependency: textConstants.loadingDependency,
@@ -59,18 +47,21 @@ export default function ProfessorPage() {
   useEffect(() => {
     async function fetchData() {
       const professor = await fetchProfessor(professorId);
-      setProfessor(professor);
+
+      if (professor) {
+        setProfessor(professor);
+      }
 
       const reviews = await fetchReviews(professorId);
       const sortedReviews = reviews.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
       setReviews(sortedReviews);
     }
 
     if (professorId) fetchData();
-  }, [professorId, isReviewPopupOpen]);
+  }, [professorId]);
 
   return (
     <Box
@@ -127,33 +118,24 @@ export default function ProfessorPage() {
 }
 
 async function fetchProfessor(id: string) {
-  const { data: professor, error } = await supabase
-    .from("professor_information")
-    .select("*")
-    .eq("id", id);
-
-  if (error) {
-    console.error("Error fetching professor:", error);
-    return [];
+  try {
+    const professor: Professor = (await axios.get(`${apiUrl}/professors/${id}`))
+      .data;
+    return professor;
+  } catch (e) {
+    console.error(`Error fetching professor: ${e}`);
+    return null; // Better to return null here, also, 404 should end here too
   }
-
-  if (!professor) return [];
-
-  return professor[0];
 }
 
 async function fetchReviews(id: string) {
-  const { data: reviews, error } = await supabase
-    .from("professor_reviews")
-    .select("*")
-    .eq("professorId", id);
-
-  if (error) {
-    console.error("Error fetching reviews:", error);
+  try {
+    const reviews: Review[] = (
+      await axios.get(`${apiUrl}/professors/${id}/reviews`)
+    ).data;
+    return reviews;
+  } catch (e) {
+    console.error(`Error fetching reviews: ${e}`);
     return [];
   }
-
-  if (!reviews) return [];
-
-  return reviews;
 }
