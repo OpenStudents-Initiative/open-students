@@ -18,7 +18,6 @@ import CreateReviewPeriods from "./CreateReviewPeriods.tsx";
 import axios from "axios";
 import { apiUrl } from "../../config.ts";
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
-import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 import { CreatedReview, UserSessionData } from "../../utils/types.ts";
 
 interface CreateReviewProps {
@@ -40,7 +39,6 @@ interface Period {
 }
 
 const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
-  const user = useAuthUser<UserSessionData>();
   const intl = useIntl();
   const authHeader = useAuthHeader();
   const textConstants = {
