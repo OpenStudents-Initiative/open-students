@@ -168,6 +168,7 @@ const LoginButton = ({
         onClick={() => {
           signOut();
           setCurrentProfessorId("");
+          handleClose();
         }}
       >
         {intl.formatMessage({ id: "headerLogout" })}
