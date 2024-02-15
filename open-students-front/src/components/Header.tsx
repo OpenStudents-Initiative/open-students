@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Menu, MenuItem, Typography } from "@mui/material";
 import "../styles/Header.css";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
+import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { currentProfessorIdState } from "../atoms/defaultAtoms";
 import { AUTH_ROUTE, HOME_ROUTE, PROFILE_ROUTE } from "../utils/consts";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
@@ -69,6 +69,7 @@ export default function Header() {
             navigate={navigate}
             anchorEl={anchorEl}
             signOut={signOut}
+            setCurrentProfessorId={setCurrentProfessorId}
             userAuthenticated={userAuthenticated}
             handleMenu={handleMenu}
             handleClose={handleClose}
@@ -104,6 +105,7 @@ const LoginButton = ({
   userAuthenticated,
   anchorEl,
   signOut,
+  setCurrentProfessorId,
   handleMenu,
   handleClose,
   intl,
@@ -113,6 +115,7 @@ const LoginButton = ({
   userAuthenticated: boolean;
   anchorEl: HTMLElement | null;
   signOut: () => void;
+  setCurrentProfessorId: SetterOrUpdater<string>;
   handleMenu: (event: React.MouseEvent<HTMLElement>) => void;
   handleClose: () => void;
   intl: IntlShape;
@@ -164,7 +167,7 @@ const LoginButton = ({
       <MenuItem
         onClick={() => {
           signOut();
-          navigate(HOME_ROUTE);
+          setCurrentProfessorId("");
         }}
       >
         {intl.formatMessage({ id: "headerLogout" })}
