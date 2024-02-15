@@ -2,12 +2,11 @@ import { IntlShape, useIntl } from "react-intl";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
 import { COLORS } from "../styles/colors";
 import SearchBar from "./searchBar/SearchBar";
 import { SearchResultsList } from "./searchBar/SearchResultsList";
 import { useState } from "react";
-import { Menu, MenuItem, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import "../styles/Header.css";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
@@ -15,6 +14,13 @@ import { currentProfessorIdState } from "../atoms/defaultAtoms";
 import { AUTH_ROUTE, HOME_ROUTE, PROFILE_ROUTE } from "../utils/consts";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useSignOut from "react-auth-kit/hooks/useSignOut";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export default function Header() {
   const intl = useIntl();
@@ -102,9 +108,7 @@ const LoginButton = ({
   text,
   navigate,
   userAuthenticated,
-  anchorEl,
   signOut,
-  handleMenu,
   handleClose,
   intl,
 }: {
@@ -118,57 +122,38 @@ const LoginButton = ({
   intl: IntlShape;
 }) => (
   <>
-    <Button
-      style={{
-        borderRadius: 20,
-        padding: "5px 15px",
-        backgroundColor: COLORS.primary,
-        fontSize: "15px",
-        textTransform: "none",
-      }}
-      variant="contained"
-      onClick={(e) => {
-        // TODO: Handle the menu once the user is logged in
-        if (userAuthenticated) {
-          handleMenu(e);
-          // Show list of options with logout and profile
-        } else {
+    {!userAuthenticated ? (
+      <Button
+        onClick={() => {
           navigate(AUTH_ROUTE);
-        }
-      }}
-    >
-      {text}
-    </Button>
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={Boolean(anchorEl)}
-      onClose={handleClose}
-    >
-      <MenuItem
-        onClick={() => {
-          navigate(PROFILE_ROUTE);
-          handleClose();
         }}
       >
-        {intl.formatMessage({ id: "headerProfile" })}
-      </MenuItem>
-      <MenuItem
-        onClick={() => {
-          signOut();
-          navigate(HOME_ROUTE);
-        }}
-      >
-        {intl.formatMessage({ id: "headerLogout" })}
-      </MenuItem>
-    </Menu>
+        {text}
+      </Button>
+    ) : (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>{text}</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() => {
+              navigate(PROFILE_ROUTE);
+              handleClose();
+            }}
+          >
+            {intl.formatMessage({ id: "headerProfile" })}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              signOut();
+              navigate(HOME_ROUTE);
+            }}
+          >
+            {intl.formatMessage({ id: "headerLogout" })}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )}
   </>
 );

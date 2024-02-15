@@ -18,8 +18,7 @@ import CreateReviewPeriods from "./CreateReviewPeriods.tsx";
 import axios from "axios";
 import { apiUrl } from "../../config.ts";
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
-import useAuthUser from "react-auth-kit/hooks/useAuthUser";
-import { CreatedReview, UserSessionData } from "../../utils/types.ts";
+import { CreatedReview } from "../../utils/types.ts";
 
 interface CreateReviewProps {
   open: boolean;
@@ -40,7 +39,6 @@ interface Period {
 }
 
 const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
-  const user = useAuthUser<UserSessionData>();
   const intl = useIntl();
   const authHeader = useAuthHeader();
   const textConstants = {
@@ -249,7 +247,7 @@ const fetchCourses = async (id: string) => {
 
   const sortedCourses: Course[] = courses.sort(
     (course1: Course, course2: Course) =>
-      course1.courseName.localeCompare(course2.courseName),
+      course1.courseName.localeCompare(course2.courseName)
   );
 
   return sortedCourses;
