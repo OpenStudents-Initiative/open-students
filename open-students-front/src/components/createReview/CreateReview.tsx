@@ -28,6 +28,16 @@ interface CreateReviewProps {
   professor: { name: string; id: string };
 }
 
+interface ReviewFormData {
+  reviewText: string;
+  professorRating: number;
+  wouldTakeAgain: boolean;
+  difficultyRating: number;
+  obtainedGrade: number;
+  selectedCourse: Course | null;
+  selectedPeriod: Period | null;
+}
+
 const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
   const intl = useIntl();
   const authHeader = useAuthHeader();
@@ -44,46 +54,37 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     rating: intl.formatMessage({ id: "rating" }),
   };
 
-  const [reviewText, setReviewText] = useState("");
-  const [professorRating, setProfessorRating] = useState(0);
-  const [wouldTakeAgain, setWouldTakeAgain] = useState(false);
-  const [difficultyRating, setDifficultyRating] = useState(0);
-  const [obtainedGrade, setObtainedGrade] = useState(0);
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedPeriod, setSelectedPeriod] = useState("");
+  const [formData, setFormData] = useState<ReviewFormData>({
+    reviewText: "",
+    professorRating: 0,
+    wouldTakeAgain: false,
+    difficultyRating: 0,
+    obtainedGrade: 0,
+    selectedCourse: null,
+    selectedPeriod: null,
+  });
 
-  const [showDifficultyError, setShowDifficultyError] = useState(false);
-  const [showRatingError, setShowRatingError] = useState(false);
-  const [showTextFieldError, setShowTextFieldError] = useState(false);
-  const [showCourseError, setShowCourseError] = useState(false);
-  const [showPeriodError, setShowPeriodError] = useState(false);
-  const [showGradeError, setShowGradeError] = useState(false);
+  const [errorStates, setErrorStates] = useState({
+    showDifficultyError: false,
+    showRatingError: false,
+    showTextFieldError: false,
+    showCourseError: false,
+    showPeriodError: false,
+    showGradeError: false,
+  });
 
-  const [courses, setCourses] = useState<string[]>([]);
-  const [periods, setPeriods] = useState<string[]>([]);
-
-  const [periodsMap, setPeriodsMap] = useState<Map<string, Period>>(new Map());
-  const [coursesMap, setCoursesMap] = useState<Map<string, Course>>(new Map());
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [periods, setPeriods] = useState<Period[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       const courses: Course[] = await fetchProfessorCourses(professor.id);
       courses.sort(compareCourses);
-      const preCoursesMap = new Map<string, Course>();
-      for (const course of courses) {
-        preCoursesMap.set(course.courseName, course);
-      }
-      setCoursesMap(preCoursesMap);
-      setCourses(courses.map((course: Course) => course.courseName));
+      setCourses(courses);
 
       const periods: Period[] = await fetchAllPeriods();
       periods.sort(comparePeriods);
-      const prePeriodsMap = new Map<string, Period>();
-      for (const period of periods) {
-        prePeriodsMap.set(period.name, period);
-      }
-      setPeriodsMap(prePeriodsMap);
-      setPeriods(periods.map((period: Period) => period.name));
+      setPeriods(periods);
     }
 
     if (professor.id) {
@@ -91,30 +92,24 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     }
   }, [professor.id]);
 
-  async function handleReviewSubmit() {
-    setShowTextFieldError(reviewText === "");
-    setShowRatingError(professorRating < 1);
-    setShowDifficultyError(difficultyRating < 1);
-    setShowCourseError(selectedCourse === "");
-    setShowPeriodError(selectedPeriod === "");
-    setShowGradeError(obtainedGrade < 1);
+  function isThereFormErrors() {
+    return (
+      errorStates.showDifficultyError ||
+      errorStates.showRatingError ||
+      errorStates.showTextFieldError ||
+      errorStates.showCourseError ||
+      errorStates.showPeriodError ||
+      errorStates.showGradeError
+    );
+  }
 
-    if (!coursesMap.get(selectedCourse) || !periodsMap.get(selectedPeriod)) {
+  async function handleReviewSubmit() {
+    if (!formData.selectedCourse || !formData.selectedPeriod) {
       console.error("Error: no course or period selected");
       return;
     }
 
-    const reviewObject: CreatedReview = {
-      course: coursesMap.get(selectedCourse)!.id,
-      code: coursesMap.get(selectedCourse)!.code,
-      period: periodsMap.get(selectedPeriod)!.id,
-      review: reviewText,
-      generalRating: professorRating,
-      difficultyLevel: difficultyRating,
-      courseGrade: obtainedGrade,
-      wouldEnrollAgain: wouldTakeAgain,
-      professorId: professor.id,
-    };
+    const reviewObject: CreatedReview = createReviewObject(formData, professor);
 
     if (authHeader) {
       postReview(reviewObject, authHeader);
@@ -122,17 +117,7 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
       console.error("User tried to post a review, but user is not logged in?");
     }
 
-    if (
-      !(
-        showCourseError ||
-        showPeriodError ||
-        showTextFieldError ||
-        showRatingError ||
-        showDifficultyError ||
-        showGradeError
-      )
-    )
-      onClose();
+    if (!isThereFormErrors()) onClose();
   }
 
   return (
@@ -210,6 +195,23 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 };
 
 export default CreateReview;
+
+const createReviewObject = (
+  formData: ReviewFormData,
+  professor: { id: string },
+) => {
+  return {
+    course: formData.selectedCourse!.id,
+    code: formData.selectedCourse!.code,
+    period: formData.selectedPeriod!.id,
+    review: formData.reviewText,
+    generalRating: formData.professorRating,
+    difficultyLevel: formData.difficultyRating,
+    courseGrade: formData.obtainedGrade,
+    wouldEnrollAgain: formData.wouldTakeAgain,
+    professorId: professor.id,
+  };
+};
 
 const compareCourses = (course1: Course, course2: Course) =>
   course1.courseName.localeCompare(course2.courseName);
