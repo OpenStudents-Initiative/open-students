@@ -4,6 +4,7 @@ import "../../styles/SearchBar.css";
 import { useIntl } from "react-intl";
 import axios from "axios";
 import { apiUrl } from "../../config";
+import levensthein from "js-levenshtein";
 
 interface SearchBarProps {
   results: Array<{ name: string; id: string }>;
@@ -78,15 +79,23 @@ function professorNamesToStrList(
   input: string,
   professorNames: { name: string; id: string }[],
 ) {
-  const profs: { name: string; id: string }[] = professorNames
-    .filter(({ name }: { name: string; id: string }) =>
-      name.toLowerCase().includes(input.toLowerCase()),
-    )
-    .sort(
-      (a: { name: string; id: string }, b: { name: string; id: string }) =>
-        a.name.toLowerCase().indexOf(input.toLowerCase()) -
-        b.name.toLowerCase().indexOf(input.toLowerCase()),
-    );
+  const sortedProfNames: { name: string; id: string }[] = professorNames
+    .map((value) => {
+      const normalizedName = value.name.normalize();
+      return {
+        name: normalizedName,
+        id: value.id,
+        // Levensthein distance is biased towards string length, this
+        // should normalize the distance and reduce this bias
+        score: levensthein(normalizedName, input) / normalizedName.length,
+      };
+    })
+    .sort((a, b) => a.score - b.score)
+    .map((value) => {
+      console.log(value);
+      return { name: value.name, id: value.id };
+    })
+    .slice(0, 5);
 
-  return profs;
+  return sortedProfNames;
 }
