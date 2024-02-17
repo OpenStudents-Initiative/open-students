@@ -1,63 +1,76 @@
-import React from 'react';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import { useIntl } from 'react-intl';
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import { useIntl } from "react-intl";
+import { Period } from "../../utils/types";
+import { useEffect } from "react";
 
 interface CreateReviewPeriodsProps {
-    selectPeriodText: string;
-    selectedPeriod: string;
-    setSelectedPeriod: React.Dispatch<React.SetStateAction<string>>;
-    periods: string[];
-    showError: boolean;
-    setShowError: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedPeriod: Period | null;
+  setSelectedPeriod: (value: Period) => void;
+  periods: Period[];
+  showError: boolean;
+  setShowError: (value: boolean) => void;
 }
 
 const CreateReviewPeriods = ({
-    selectPeriodText,
-    selectedPeriod,
-    setSelectedPeriod,
-    periods,
-    showError,
-    setShowError,
+  selectedPeriod,
+  setSelectedPeriod,
+  periods,
+  showError,
+  setShowError,
 }: CreateReviewPeriodsProps) => {
-    const intl = useIntl();
-    const textConstants = {
-        periodNotSelectedError: intl.formatMessage({ id: 'periodNotSelectedError' }),
-    };
+  const intl = useIntl();
+  const periodMap = new Map<string, Period>();
 
-    const handleSelectChange = (e: { target: { value: string; }; }) => {
-        setSelectedPeriod(e.target.value as string);
-        setShowError(e.target.value === '');
-    };
+  useEffect(() => {
+    periodMap.clear();
+    periods.forEach((period) => {
+      periodMap.set(period.id, period);
+    });
+  });
 
-    return (
-        <FormControl fullWidth>
-            <InputLabel id="selected-period-label">{selectPeriodText}</InputLabel>
-            <Select
-                label={selectPeriodText}
-                labelId="selected-period-label"
-                value={selectedPeriod}
-                onChange={handleSelectChange}
-            >
-                <MenuItem value="" disabled>
-                    {selectPeriodText}
-                </MenuItem>
-                {periods.map((period, index) => (
-                    <MenuItem value={period} key={index}>
-                        {period}
-                    </MenuItem>
-                ))}
-            </Select>
-            {showError && (
-                <Typography variant="body2" sx={{ color: 'red', marginTop: 1 }}>
-                    {textConstants.periodNotSelectedError}
-                </Typography>
-            )}
-        </FormControl>
-    );
+  const textConstants = {
+    periodNotSelectedError: intl.formatMessage({
+      id: "periodNotSelectedError",
+    }),
+    selectPeriodText: intl.formatMessage({ id: "selectPeriodText" }),
+  };
+
+  const handleSelectChange = (e: { target: { value: string } }) => {
+    setSelectedPeriod(periodMap.get(e.target.value as string)!);
+    setShowError(e.target.value === "");
+  };
+
+  return (
+    <FormControl fullWidth>
+      <InputLabel id="selected-period-label">
+        {textConstants.selectPeriodText}
+      </InputLabel>
+      <Select
+        label={textConstants.selectPeriodText}
+        labelId="selected-period-label"
+        value={selectedPeriod ? selectedPeriod.name : ""}
+        onChange={handleSelectChange}
+      >
+        <MenuItem value="" disabled>
+          {textConstants.selectPeriodText}
+        </MenuItem>
+        {periods.map((period, index) => (
+          <MenuItem value={period.id} key={index}>
+            {period.name}
+          </MenuItem>
+        ))}
+      </Select>
+      {showError && (
+        <Typography variant="body2" sx={{ color: "red", marginTop: 1 }}>
+          {textConstants.periodNotSelectedError}
+        </Typography>
+      )}
+    </FormControl>
+  );
 };
 
 export default CreateReviewPeriods;

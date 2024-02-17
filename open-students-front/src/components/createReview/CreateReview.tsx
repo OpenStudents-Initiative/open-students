@@ -38,20 +38,21 @@ interface ReviewFormData {
   selectedPeriod: Period | null;
 }
 
+interface FormErrorStates {
+  showDifficultyError: boolean;
+  showRatingError: boolean;
+  showTextFieldError: boolean;
+  showCourseError: boolean;
+  showPeriodError: boolean;
+  showGradeError: boolean;
+}
+
 const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
   const intl = useIntl();
   const authHeader = useAuthHeader();
   const textConstants = {
     writeAReviewFor: intl.formatMessage({ id: "writeAReviewFor" }),
-    wouldTakeAgainText: intl.formatMessage({ id: "wouldTakeAgainText" }),
-    wouldNotTakeAgainText: intl.formatMessage({ id: "wouldNotTakeAgainText" }),
-    obtainedGradeText: intl.formatMessage({ id: "obtainedGradeText" }),
-    selectClassText: intl.formatMessage({ id: "selectClassText" }),
-    selectPeriodText: intl.formatMessage({ id: "selectPeriodText" }),
     submitReviewText: intl.formatMessage({ id: "submitReviewText" }),
-
-    difficulty: intl.formatMessage({ id: "difficulty" }),
-    rating: intl.formatMessage({ id: "rating" }),
   };
 
   const [formData, setFormData] = useState<ReviewFormData>({
@@ -64,7 +65,7 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     selectedPeriod: null,
   });
 
-  const [errorStates, setErrorStates] = useState({
+  const [errorStates, setErrorStates] = useState<FormErrorStates>({
     showDifficultyError: false,
     showRatingError: false,
     showTextFieldError: false,
@@ -120,59 +121,68 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     if (!isThereFormErrors()) onClose();
   }
 
+  function modifyFormData<T extends keyof ReviewFormData>(property: T) {
+    return (value: ReviewFormData[T]) => {
+      const modifiedFormData: ReviewFormData = { ...formData };
+      modifiedFormData[property] = value;
+      setFormData(modifiedFormData);
+    };
+  }
+
+  function modifyErrorStates<T extends keyof FormErrorStates>(error: T) {
+    return (value: FormErrorStates[T]) => {
+      const modifiedErrorStates: FormErrorStates = { ...errorStates };
+      modifiedErrorStates[error] = value;
+      setErrorStates(modifiedErrorStates);
+    };
+  }
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>{`${textConstants.writeAReviewFor} ${professor.name}`}</DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
           <CreateReviewTextField
-            reviewText={reviewText}
-            setReviewText={setReviewText}
-            showError={showTextFieldError}
-            setShowError={setShowTextFieldError}
+            reviewText={formData.reviewText}
+            setReviewText={modifyFormData("reviewText")}
+            showError={errorStates.showTextFieldError}
+            setShowError={modifyErrorStates("showTextFieldError")}
           />
           <CreateReviewRating
-            textRating={textConstants.rating}
-            professorRating={professorRating}
-            setProfessorRating={setProfessorRating}
-            showError={showRatingError}
-            setShowError={setShowRatingError}
+            professorRating={formData.professorRating}
+            setProfessorRating={modifyFormData("professorRating")}
+            showError={errorStates.showRatingError}
+            setShowError={modifyErrorStates("showRatingError")}
           />
           <CreateReviewDifficulty
-            difficultyText={textConstants.difficulty}
-            difficultyRating={difficultyRating}
-            setDifficultyRating={setDifficultyRating}
-            showError={showDifficultyError}
-            setShowError={setShowDifficultyError}
+            difficultyRating={formData.difficultyRating}
+            setDifficultyRating={modifyFormData("difficultyRating")}
+            showError={errorStates.showDifficultyError}
+            setShowError={modifyErrorStates("showDifficultyError")}
           />
           <CreateReviewWouldTakeAgain
-            wouldTakeAgainText={textConstants.wouldTakeAgainText}
-            wouldNotTakeAgainText={textConstants.wouldNotTakeAgainText}
-            wouldTakeAgain={wouldTakeAgain}
-            setWouldTakeAgain={setWouldTakeAgain}
+            wouldTakeAgain={formData.wouldTakeAgain}
+            setWouldTakeAgain={modifyFormData("wouldTakeAgain")}
           />
           <CreateReviewObtainedGrade
-            obtainedGradeText={textConstants.obtainedGradeText}
-            obtainedGrade={obtainedGrade}
-            setObtainedGrade={setObtainedGrade}
-            showError={showGradeError}
-            setShowError={setShowGradeError}
+            obtainedGrade={formData.obtainedGrade}
+            setObtainedGrade={modifyFormData("obtainedGrade")}
+            showError={errorStates.showGradeError}
+            setShowError={modifyErrorStates("showGradeError")}
           />
           <CreateReviewCourses
-            selectClassText={textConstants.selectClassText}
-            classes={courses}
-            selectedClass={selectedCourse}
-            setSelectedClass={setSelectedCourse}
-            showError={showCourseError}
-            setShowError={setShowCourseError}
+            courses={courses}
+            selectedCourse={formData.selectedCourse}
+            setSelectedCourse={modifyFormData("selectedCourse")}
+            showError={errorStates.showCourseError}
+            setShowError={modifyErrorStates("showCourseError")}
           />
           <CreateReviewPeriods
-            selectPeriodText={textConstants.selectPeriodText}
             periods={periods}
-            selectedPeriod={selectedPeriod}
-            setSelectedPeriod={setSelectedPeriod}
-            showError={showPeriodError}
-            setShowError={setShowPeriodError}
+            selectedPeriod={formData.selectedPeriod}
+            setSelectedPeriod={modifyFormData("selectedPeriod")}
+            showError={errorStates.showPeriodError}
+            setShowError={modifyErrorStates("showPeriodError")}
           />
           <Button
             variant="contained"
