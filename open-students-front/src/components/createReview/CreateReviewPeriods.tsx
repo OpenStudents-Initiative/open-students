@@ -28,7 +28,7 @@ const CreateReviewPeriods = ({
   useEffect(() => {
     periodMap.clear();
     periods.forEach((period) => {
-      periodMap.set(period.id, period);
+      periodMap.set(period.name, period);
     });
   });
 
@@ -59,7 +59,7 @@ const CreateReviewPeriods = ({
           {textConstants.selectPeriodText}
         </MenuItem>
         {periods.map((period, index) => (
-          <MenuItem value={period.id} key={index}>
+          <MenuItem value={period.name} key={index}>
             {period.name}
           </MenuItem>
         ))}

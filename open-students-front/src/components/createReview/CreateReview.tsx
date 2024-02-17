@@ -21,33 +21,15 @@ import type { Period, Course } from "../../utils/types.ts";
 import { fetchAllPeriods } from "../../services/periodService.ts";
 import { fetchProfessorCourses } from "../../services/professorService.ts";
 import { postReview } from "../../services/reviewService.ts";
+import { compareCourses, comparePeriods } from "../../utils/comparisons.ts";
 
 interface CreateReviewProps {
   open: boolean;
-  onClose: () => void;
+  handleClose: () => void;
   professor: { name: string; id: string };
 }
 
-interface ReviewFormData {
-  reviewText: string;
-  professorRating: number;
-  wouldTakeAgain: boolean;
-  difficultyRating: number;
-  obtainedGrade: number;
-  selectedCourse: Course | null;
-  selectedPeriod: Period | null;
-}
-
-interface FormErrorStates {
-  showDifficultyError: boolean;
-  showRatingError: boolean;
-  showTextFieldError: boolean;
-  showCourseError: boolean;
-  showPeriodError: boolean;
-  showGradeError: boolean;
-}
-
-const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
+const CreateReview = ({ open, handleClose, professor }: CreateReviewProps) => {
   const intl = useIntl();
   const authHeader = useAuthHeader();
   const textConstants = {
@@ -55,24 +37,20 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     submitReviewText: intl.formatMessage({ id: "submitReviewText" }),
   };
 
-  const [formData, setFormData] = useState<ReviewFormData>({
-    reviewText: "",
-    professorRating: 0,
-    wouldTakeAgain: false,
-    difficultyRating: 0,
-    obtainedGrade: 0,
-    selectedCourse: null,
-    selectedPeriod: null,
-  });
+  const [reviewText, setReviewText] = useState("");
+  const [professorRating, setProfessorRating] = useState(0);
+  const [wouldTakeAgain, setWouldTakeAgain] = useState(false);
+  const [difficultyRating, setDifficultyRating] = useState(0);
+  const [obtainedGrade, setObtainedGrade] = useState(0);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<Period | null>(null);
 
-  const [errorStates, setErrorStates] = useState<FormErrorStates>({
-    showDifficultyError: false,
-    showRatingError: false,
-    showTextFieldError: false,
-    showCourseError: false,
-    showPeriodError: false,
-    showGradeError: false,
-  });
+  const [showDifficultyError, setShowDifficultyError] = useState(false);
+  const [showRatingError, setShowRatingError] = useState(false);
+  const [showTextFieldError, setShowTextFieldError] = useState(false);
+  const [showCourseError, setShowCourseError] = useState(false);
+  const [showPeriodError, setShowPeriodError] = useState(false);
+  const [showGradeError, setShowGradeError] = useState(false);
 
   const [courses, setCourses] = useState<Course[]>([]);
   const [periods, setPeriods] = useState<Period[]>([]);
@@ -93,24 +71,37 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     }
   }, [professor.id]);
 
-  function isThereFormErrors() {
+  const isThereFormErrors = () => {
     return (
-      errorStates.showDifficultyError ||
-      errorStates.showRatingError ||
-      errorStates.showTextFieldError ||
-      errorStates.showCourseError ||
-      errorStates.showPeriodError ||
-      errorStates.showGradeError
+      showDifficultyError ||
+      showRatingError ||
+      showTextFieldError ||
+      showCourseError ||
+      showPeriodError ||
+      showGradeError
     );
-  }
+  };
 
-  async function handleReviewSubmit() {
-    if (!formData.selectedCourse || !formData.selectedPeriod) {
+  const createReviewObject = (professor: { id: string }) => {
+    return {
+      course: selectedCourse!.id,
+      code: selectedCourse!.code,
+      period: selectedPeriod!.id,
+      review: reviewText,
+      generalRating: professorRating,
+      difficultyLevel: difficultyRating,
+      courseGrade: obtainedGrade,
+      wouldEnrollAgain: wouldTakeAgain,
+      professorId: professor.id,
+    };
+  };
+  const handleReviewSubmit = async () => {
+    if (!selectedCourse || !selectedPeriod) {
       console.error("Error: no course or period selected");
       return;
     }
 
-    const reviewObject: CreatedReview = createReviewObject(formData, professor);
+    const reviewObject: CreatedReview = createReviewObject(professor);
 
     if (authHeader) {
       postReview(reviewObject, authHeader);
@@ -118,71 +109,55 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
       console.error("User tried to post a review, but user is not logged in?");
     }
 
-    if (!isThereFormErrors()) onClose();
-  }
-
-  function modifyFormData<T extends keyof ReviewFormData>(property: T) {
-    return (value: ReviewFormData[T]) => {
-      const modifiedFormData: ReviewFormData = { ...formData };
-      modifiedFormData[property] = value;
-      setFormData(modifiedFormData);
-    };
-  }
-
-  function modifyErrorStates<T extends keyof FormErrorStates>(error: T) {
-    return (value: FormErrorStates[T]) => {
-      const modifiedErrorStates: FormErrorStates = { ...errorStates };
-      modifiedErrorStates[error] = value;
-      setErrorStates(modifiedErrorStates);
-    };
-  }
+    if (!isThereFormErrors()) handleClose();
+  };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>{`${textConstants.writeAReviewFor} ${professor.name}`}</DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
           <CreateReviewTextField
-            reviewText={formData.reviewText}
-            setReviewText={modifyFormData("reviewText")}
-            showError={errorStates.showTextFieldError}
-            setShowError={modifyErrorStates("showTextFieldError")}
+            reviewText={reviewText}
+            setReviewText={setReviewText}
+            showError={showTextFieldError}
+            setShowError={setShowTextFieldError}
           />
           <CreateReviewRating
-            professorRating={formData.professorRating}
-            setProfessorRating={modifyFormData("professorRating")}
-            showError={errorStates.showRatingError}
-            setShowError={modifyErrorStates("showRatingError")}
+            professorRating={professorRating}
+            setProfessorRating={setProfessorRating}
+            showError={showRatingError}
+            setShowError={setShowRatingError}
           />
           <CreateReviewDifficulty
-            difficultyRating={formData.difficultyRating}
-            setDifficultyRating={modifyFormData("difficultyRating")}
-            showError={errorStates.showDifficultyError}
-            setShowError={modifyErrorStates("showDifficultyError")}
+            difficultyRating={difficultyRating}
+            setDifficultyRating={setDifficultyRating}
+            showError={showDifficultyError}
+            setShowError={setShowDifficultyError}
           />
           <CreateReviewWouldTakeAgain
-            wouldTakeAgain={formData.wouldTakeAgain}
-            setWouldTakeAgain={modifyFormData("wouldTakeAgain")}
+            wouldTakeAgain={wouldTakeAgain}
+            setWouldTakeAgain={setWouldTakeAgain}
           />
           <CreateReviewObtainedGrade
-            obtainedGrade={formData.obtainedGrade}
-            setObtainedGrade={modifyFormData("obtainedGrade")}
-            showError={errorStates.showGradeError}
-            setShowError={modifyErrorStates("showGradeError")}
+            obtainedGrade={obtainedGrade}
+            setObtainedGrade={setObtainedGrade}
+            showError={showGradeError}
+            setShowError={setShowGradeError}
           />
           <CreateReviewCourses
             courses={courses}
-            selectedCourse={formData.selectedCourse}
-            setSelectedCourse={modifyFormData("selectedCourse")}
-            showError={errorStates.showCourseError}
-            setShowError={modifyErrorStates("showCourseError")}
+            selectedCourse={selectedCourse}
+            setSelectedCourse={setSelectedCourse}
+            showError={showCourseError}
+            setShowError={setShowCourseError}
           />
           <CreateReviewPeriods
             periods={periods}
-            selectedPeriod={formData.selectedPeriod}
-            setSelectedPeriod={modifyFormData("selectedPeriod")}
-            showError={errorStates.showPeriodError}
-            setShowError={modifyErrorStates("showPeriodError")}
+            selectedPeriod={selectedPeriod}
+            setSelectedPeriod={setSelectedPeriod}
+            showError={showPeriodError}
+            setShowError={setShowPeriodError}
           />
           <Button
             variant="contained"
@@ -205,38 +180,3 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 };
 
 export default CreateReview;
-
-const createReviewObject = (
-  formData: ReviewFormData,
-  professor: { id: string },
-) => {
-  return {
-    course: formData.selectedCourse!.id,
-    code: formData.selectedCourse!.code,
-    period: formData.selectedPeriod!.id,
-    review: formData.reviewText,
-    generalRating: formData.professorRating,
-    difficultyLevel: formData.difficultyRating,
-    courseGrade: formData.obtainedGrade,
-    wouldEnrollAgain: formData.wouldTakeAgain,
-    professorId: professor.id,
-  };
-};
-
-const compareCourses = (course1: Course, course2: Course) =>
-  course1.courseName.localeCompare(course2.courseName);
-
-const comparePeriods = (period1: Period, period2: Period) => {
-  // Descending order, prioritizing numbers over strings. E.g: 2023-20, 2023-10, 2022-20, ..., other
-
-  // Extract numeric parts from the strings
-  const num1 = parseInt(period1.name, 10) || 0;
-  const num2 = parseInt(period2.name, 10) || 0;
-  // Compare numeric parts first
-  if (num1 !== num2) {
-    return num2 - num1;
-  }
-
-  // If numeric parts are equal, compare the entire strings
-  return period2.name.localeCompare(period1.name);
-};

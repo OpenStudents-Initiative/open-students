@@ -1,11 +1,10 @@
-import React from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { useIntl } from "react-intl";
 
 interface CreateReviewWouldTakeAgainProps {
   wouldTakeAgain: boolean;
-  setWouldTakeAgain: React.Dispatch<React.SetStateAction<boolean>>;
+  setWouldTakeAgain: (value: boolean) => void;
 }
 
 const CreateReviewWouldTakeAgain = ({
