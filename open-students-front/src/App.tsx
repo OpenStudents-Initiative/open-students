@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import Header from "./components/Header.tsx";
+import NavBar from "./components/NavBar.tsx";
 import Footer from "./components/Footer.tsx";
 import ProfessorPage from "./pages/ProfessorPage.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
@@ -21,7 +21,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <Header />
+      <NavBar />
       <ScrollToTop />
       <div className="p-4">
         <Routes>

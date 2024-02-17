@@ -28,7 +28,7 @@ const ProfessorCardRatingGradeDifficulty = ({
   ];
 
   return (
-    <div className="bg-slate-300 p-2 rounded-md my-6">
+    <div className="bg-secondary p-2 rounded-md my-6">
       <div className="grid grid-cols-3 gap-2">
         {textsAndNumbers.map(([text, num]) => (
           <>

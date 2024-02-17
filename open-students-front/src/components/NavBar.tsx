@@ -1,13 +1,7 @@
 import { IntlShape, useIntl } from "react-intl";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import { COLORS } from "../styles/colors";
 import SearchBar from "./searchBar/SearchBar";
 import { SearchResultsList } from "./searchBar/SearchResultsList";
 import { useState } from "react";
-import { Typography } from "@mui/material";
-import "../styles/Header.css";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { currentProfessorIdState } from "../atoms/defaultAtoms";
@@ -22,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-export default function Header() {
+export default function NavBar() {
   const intl = useIntl();
   const userAuthenticated = useIsAuthenticated()();
   const signOut = useSignOut();
@@ -47,62 +41,52 @@ export default function Header() {
   const [showResults, setShowResults] = useState(false);
 
   return (
-    <Box className="header">
-      <AppBar position="static" sx={{ backgroundColor: "white" }}>
-        <Toolbar className="first-row">
-          <LogoOpenStudents
-            openStudentsText={textConstants.openStudents}
-            navigate={navigate}
+    <nav className="bg-background flex justify-between items-center p-4 shadow-md sticky top-0 right-0 left-0">
+      <LogoOpenStudents text={textConstants.openStudents} navigate={navigate} />
+      {userAuthenticated && (
+        <>
+          <SearchBar
+            results={results}
+            setResults={setResults}
+            setShowResults={setShowResults}
           />
-          {userAuthenticated && (
-            <Box className="search-bar-container">
-              <SearchBar
-                results={results}
-                setResults={setResults}
-                setShowResults={setShowResults}
-              />
-              {showResults && (
-                <SearchResultsList
-                  results={results}
-                  setCurrentProfessorId={setCurrentProfessorId}
-                  setShowResults={setShowResults}
-                />
-              )}
-            </Box>
+          {showResults && (
+            <SearchResultsList
+              results={results}
+              setCurrentProfessorId={setCurrentProfessorId}
+              setShowResults={setShowResults}
+            />
           )}
-          <LoginButton
-            text={text}
-            navigate={navigate}
-            anchorEl={anchorEl}
-            signOut={signOut}
-            setCurrentProfessorId={setCurrentProfessorId}
-            userAuthenticated={userAuthenticated}
-            handleMenu={handleMenu}
-            handleClose={handleClose}
-            intl={intl}
-          />
-        </Toolbar>
-      </AppBar>
-    </Box>
+        </>
+      )}
+      <LoginButton
+        text={text}
+        navigate={navigate}
+        anchorEl={anchorEl}
+        signOut={signOut}
+        setCurrentProfessorId={setCurrentProfessorId}
+        userAuthenticated={userAuthenticated}
+        handleMenu={handleMenu}
+        handleClose={handleClose}
+        intl={intl}
+      />
+    </nav>
   );
 }
 
 const LogoOpenStudents = ({
-  openStudentsText,
+  text,
   navigate,
 }: {
-  openStudentsText: string;
+  text: string;
   navigate: NavigateFunction;
 }) => (
-  <Toolbar>
-    <Typography
-      variant="h5"
-      style={{ color: COLORS.primary, fontWeight: "bold" }}
-      onClick={() => navigate("/")}
-    >
-      {openStudentsText}
-    </Typography>
-  </Toolbar>
+  <div
+    className="text-primary text-2xl font-bold cursor-pointer"
+    onClick={() => navigate("/")}
+  >
+    {text}
+  </div>
 );
 
 const LoginButton = ({

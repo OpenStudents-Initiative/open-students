@@ -1,7 +1,5 @@
-import { Box, Typography } from "@mui/material";
 import ProfessorCard from "../components/professorCard/ProfessorCard.tsx";
 import ReviewCard from "../components/reviewCard/ReviewCard.tsx";
-import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import CreateReview from "../components/createReview/CreateReview.tsx";
@@ -57,7 +55,7 @@ export default function ProfessorPage() {
       const reviews = await fetchProfessorReviews(professorId);
       const sortedReviews = reviews.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       setReviews(sortedReviews);
     }
@@ -66,55 +64,33 @@ export default function ProfessorPage() {
   }, [professorId]);
 
   return (
-    <Box
-      sx={{ flexGrow: 1 }}
-      width="90%"
-      margin="auto"
-      border={0}
-      paddingBottom="1.5em"
-    >
-      <Grid container direction={"row"} spacing={9} justifyContent="center">
-        <Grid item md={12} lg={3}>
-          <ProfessorCard
-            professor={professor}
-            makeReview={handleOpenReviewPopup}
-          />
-        </Grid>
-        <Grid item md={12} lg={9}>
-          {reviews && reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <ReviewCard key={index} review={review} />
-            ))
-          ) : (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100%",
-              }}
-            >
-              <Typography
-                variant="h5"
-                sx={{
-                  textAlign: "center",
-                  justifyContent: "center",
-                  color: "text.secondary",
-                }}
-              >
-                {textConstants.noReviewsYet}
-                <br />
-                {textConstants.beTheFirstReview}
-              </Typography>
-            </Box>
-          )}
-          <CreateReview
-            open={isReviewPopupOpen}
-            onClose={handleCloseReviewPopup}
-            professor={{ id: professorId, ...professor }}
-          />
-        </Grid>
-      </Grid>
-    </Box>
+    <div className="flex flex-col md:flex-row justify-center gap-8 p-8">
+      <div className="md:w-full lg:w-1/4">
+        <ProfessorCard
+          professor={professor}
+          makeReview={handleOpenReviewPopup}
+        />
+      </div>
+      <div className="flex flex-col md:w-full lg:w-3/4 gap-4">
+        {reviews && reviews.length > 0 ? (
+          reviews.map((review, index) => (
+            <ReviewCard key={index} review={review} />
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-center">
+              {textConstants.noReviewsYet}
+              <br />
+              {textConstants.beTheFirstReview}
+            </p>
+          </div>
+        )}
+        <CreateReview
+          open={isReviewPopupOpen}
+          onClose={handleCloseReviewPopup}
+          professor={{ id: professorId, ...professor }}
+        />
+      </div>
+    </div>
   );
 }
