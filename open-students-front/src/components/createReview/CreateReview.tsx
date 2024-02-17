@@ -15,27 +15,17 @@ import CreateReviewWouldTakeAgain from "./CreateReviewWouldTakeAgain.tsx";
 import CreateReviewObtainedGrade from "./CreateReviewObtainedGrade.tsx";
 import CreateReviewCourses from "./CreateReviewCourses.tsx";
 import CreateReviewPeriods from "./CreateReviewPeriods.tsx";
-import axios from "axios";
-import { apiUrl } from "../../config.ts";
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
-import { CreatedReview, UserSessionData } from "../../utils/types.ts";
+import { CreatedReview } from "../../utils/types.ts";
+import type { Period, Course } from "../../utils/types.ts";
+import { fetchAllPeriods } from "../../services/periodService.ts";
+import { fetchProfessorCourses } from "../../services/professorService.ts";
+import { postReview } from "../../services/reviewService.ts";
 
 interface CreateReviewProps {
   open: boolean;
   onClose: () => void;
   professor: { name: string; id: string };
-}
-
-interface Course {
-  id: string;
-  professorId: string;
-  code: string;
-  courseName: string;
-}
-
-interface Period {
-  name: string;
-  id: string;
 }
 
 const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
@@ -77,7 +67,8 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 
   useEffect(() => {
     async function fetchData() {
-      const courses: Course[] = await fetchCourses(professor.id);
+      const courses: Course[] = await fetchProfessorCourses(professor.id);
+      courses.sort(compareCourses);
       const preCoursesMap = new Map<string, Course>();
       for (const course of courses) {
         preCoursesMap.set(course.courseName, course);
@@ -85,7 +76,8 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
       setCoursesMap(preCoursesMap);
       setCourses(courses.map((course: Course) => course.courseName));
 
-      const periods: Period[] = await fetchPeriods();
+      const periods: Period[] = await fetchAllPeriods();
+      periods.sort(comparePeriods);
       const prePeriodsMap = new Map<string, Period>();
       for (const period of periods) {
         prePeriodsMap.set(period.name, period);
@@ -219,51 +211,8 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 
 export default CreateReview;
 
-const postReview = async (reviewObject: CreatedReview, authHeader: string) => {
-  try {
-    axios.post(`${apiUrl}/reviews`, reviewObject, {
-      headers: {
-        Authorization: authHeader,
-      },
-    });
-  } catch (error) {
-    console.error(`Error inserting review: ${error}`);
-  }
-};
-
-const fetchCourses = async (id: string) => {
-  let courses: Course[];
-  try {
-    courses = (await axios.get(`${apiUrl}/professors/${id}/courses`)).data;
-  } catch (e) {
-    console.error(`Error fetching courses: ${e}`);
-    return [];
-  }
-
-  if (!courses) {
-    console.error("No courses found");
-    return [];
-  }
-
-  const sortedCourses: Course[] = courses.sort(
-    (course1: Course, course2: Course) =>
-      course1.courseName.localeCompare(course2.courseName),
-  );
-
-  return sortedCourses;
-};
-
-const fetchPeriods = async () => {
-  let periods: Period[];
-  try {
-    periods = (await axios.get(`${apiUrl}/periods`)).data;
-  } catch (e) {
-    console.error(`Error fetching periods: ${e}`);
-    return [];
-  }
-
-  return periods.sort(comparePeriods);
-};
+const compareCourses = (course1: Course, course2: Course) =>
+  course1.courseName.localeCompare(course2.courseName);
 
 const comparePeriods = (period1: Period, period2: Period) => {
   // Descending order, prioritizing numbers over strings. E.g: 2023-20, 2023-10, 2022-20, ..., other

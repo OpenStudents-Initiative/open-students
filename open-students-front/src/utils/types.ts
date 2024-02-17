@@ -38,3 +38,15 @@ export interface CreatedReview {
   wouldEnrollAgain: boolean;
   professorId: string;
 }
+
+export interface Period {
+  name: string;
+  id: string;
+}
+
+export interface Course {
+  id: string;
+  professorId: string;
+  code: string;
+  courseName: string;
+}
