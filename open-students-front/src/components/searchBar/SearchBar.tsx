@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import "../../styles/SearchBar.css";
 import { useIntl } from "react-intl";
-import axios from "axios";
-import { apiUrl } from "../../config";
 import levensthein from "js-levenshtein";
+import { fetchProfessorsWithKeys } from "../../services/professorService";
 
 interface SearchBarProps {
   results: Array<{ name: string; id: string }>;
@@ -24,7 +23,7 @@ const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    fetchProfessorNames(setProfessorNames);
+    fetchAndSetProfessorNames(setProfessorNames);
   }, []);
 
   useEffect(() => {
@@ -56,23 +55,13 @@ const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
 
 export default SearchBar;
 
-async function fetchProfessorNames(
+async function fetchAndSetProfessorNames(
   setProfessorNames: React.Dispatch<
     React.SetStateAction<{ name: string; id: string }[]>
   >,
 ) {
-  try {
-    const professorNames: { name: string; id: string }[] = (
-      await axios.get(`${apiUrl}/professors`, {
-        params: {
-          keys: "name,id",
-        },
-      })
-    ).data;
-    setProfessorNames(professorNames);
-  } catch (e) {
-    console.error(`Error fetching professor names: ${e}`);
-  }
+  const professorNames = await fetchProfessorsWithKeys(["name", "id"]);
+  setProfessorNames(professorNames);
 }
 
 function professorNamesToStrList(
