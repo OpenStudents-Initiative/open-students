@@ -6,16 +6,9 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import { useState } from "react";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
-import axios from "axios";
-import { apiUrl } from "../config";
 import { HOME_ROUTE } from "../utils/consts";
 import { useNavigate } from "react-router-dom";
-import { UserSessionData } from "../utils/types";
-
-interface AuthResponse {
-  token: string;
-  userInfo: UserSessionData;
-}
+import { fetchLogin } from "../services/authService";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -26,29 +19,26 @@ export default function AuthPage() {
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try {
-      const response = await axios.post(`${apiUrl}/login`, {
-        username: email, // No, this is not a bad logic error, standard says to use username key
-        password: password,
-      });
+    const responseData = await fetchLogin(email, password);
 
-      const responseData = response.data as AuthResponse;
+    if (!responseData) {
+      setError(
+        "There has been a problem with the login endpoint, please try again later",
+      );
+      return;
+    }
 
-      if (
-        signIn({
-          auth: {
-            token: responseData.token,
-            type: "Bearer",
-          },
-          userState: responseData.userInfo,
-        })
-      ) {
-        navigate(HOME_ROUTE);
-      } else {
-        setError("Login is invalid");
-      }
-    } catch (e) {
-      console.error(e);
+    if (
+      signIn({
+        auth: {
+          token: responseData.token,
+          type: "Bearer",
+        },
+        userState: responseData.userInfo,
+      })
+    ) {
+      navigate(HOME_ROUTE);
+    } else {
       setError("Login is invalid");
     }
   };

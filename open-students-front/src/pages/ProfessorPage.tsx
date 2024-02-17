@@ -7,9 +7,11 @@ import { useIntl } from "react-intl";
 import CreateReview from "../components/createReview/CreateReview.tsx";
 import { currentProfessorIdState } from "../atoms/defaultAtoms.ts";
 import { useRecoilValue } from "recoil";
-import axios from "axios";
-import { apiUrl } from "../config.ts";
 import { Professor, Review } from "../utils/types.ts";
+import {
+  fetchProfessorById,
+  fetchProfessorReviews,
+} from "../services/professorService.ts";
 
 export default function ProfessorPage() {
   const intl = useIntl();
@@ -46,13 +48,13 @@ export default function ProfessorPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const professor = await fetchProfessor(professorId);
+      const professor = await fetchProfessorById(professorId);
 
       if (professor) {
         setProfessor(professor);
       }
 
-      const reviews = await fetchReviews(professorId);
+      const reviews = await fetchProfessorReviews(professorId);
       const sortedReviews = reviews.sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -115,27 +117,4 @@ export default function ProfessorPage() {
       </Grid>
     </Box>
   );
-}
-
-async function fetchProfessor(id: string) {
-  try {
-    const professor: Professor = (await axios.get(`${apiUrl}/professors/${id}`))
-      .data;
-    return professor;
-  } catch (e) {
-    console.error(`Error fetching professor: ${e}`);
-    return null; // Better to return null here, also, 404 should end here too
-  }
-}
-
-async function fetchReviews(id: string) {
-  try {
-    const reviews: Review[] = (
-      await axios.get(`${apiUrl}/professors/${id}/reviews`)
-    ).data;
-    return reviews;
-  } catch (e) {
-    console.error(`Error fetching reviews: ${e}`);
-    return [];
-  }
 }
