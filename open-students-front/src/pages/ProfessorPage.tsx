@@ -110,7 +110,7 @@ export default function ProfessorPage() {
           )}
           <CreateReview
             open={isReviewPopupOpen}
-            onClose={handleCloseReviewPopup}
+            handleClose={handleCloseReviewPopup}
             professor={{ id: professorId, ...professor }}
           />
         </Grid>
