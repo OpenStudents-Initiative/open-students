@@ -55,7 +55,7 @@ export default function ProfessorPage() {
       const reviews = await fetchProfessorReviews(professorId);
       const sortedReviews = reviews.sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
       setReviews(sortedReviews);
     }
@@ -87,7 +87,7 @@ export default function ProfessorPage() {
         )}
         <CreateReview
           open={isReviewPopupOpen}
-          onClose={handleCloseReviewPopup}
+          handleClose={handleCloseReviewPopup}
           professor={{ id: professorId, ...professor }}
         />
       </div>

@@ -21,27 +21,20 @@ import type { Period, Course } from "../../utils/types.ts";
 import { fetchAllPeriods } from "../../services/periodService.ts";
 import { fetchProfessorCourses } from "../../services/professorService.ts";
 import { postReview } from "../../services/reviewService.ts";
+import { compareCourses, comparePeriods } from "../../utils/comparisons.ts";
 
 interface CreateReviewProps {
   open: boolean;
-  onClose: () => void;
+  handleClose: () => void;
   professor: { name: string; id: string };
 }
 
-const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
+const CreateReview = ({ open, handleClose, professor }: CreateReviewProps) => {
   const intl = useIntl();
   const authHeader = useAuthHeader();
   const textConstants = {
     writeAReviewFor: intl.formatMessage({ id: "writeAReviewFor" }),
-    wouldTakeAgainText: intl.formatMessage({ id: "wouldTakeAgainText" }),
-    wouldNotTakeAgainText: intl.formatMessage({ id: "wouldNotTakeAgainText" }),
-    obtainedGradeText: intl.formatMessage({ id: "obtainedGradeText" }),
-    selectClassText: intl.formatMessage({ id: "selectClassText" }),
-    selectPeriodText: intl.formatMessage({ id: "selectPeriodText" }),
     submitReviewText: intl.formatMessage({ id: "submitReviewText" }),
-
-    difficulty: intl.formatMessage({ id: "difficulty" }),
-    rating: intl.formatMessage({ id: "rating" }),
   };
 
   const [reviewText, setReviewText] = useState("");
@@ -49,8 +42,8 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
   const [wouldTakeAgain, setWouldTakeAgain] = useState(false);
   const [difficultyRating, setDifficultyRating] = useState(0);
   const [obtainedGrade, setObtainedGrade] = useState(0);
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedPeriod, setSelectedPeriod] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<Period | null>(null);
 
   const [showDifficultyError, setShowDifficultyError] = useState(false);
   const [showRatingError, setShowRatingError] = useState(false);
@@ -59,31 +52,18 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
   const [showPeriodError, setShowPeriodError] = useState(false);
   const [showGradeError, setShowGradeError] = useState(false);
 
-  const [courses, setCourses] = useState<string[]>([]);
-  const [periods, setPeriods] = useState<string[]>([]);
-
-  const [periodsMap, setPeriodsMap] = useState<Map<string, Period>>(new Map());
-  const [coursesMap, setCoursesMap] = useState<Map<string, Course>>(new Map());
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [periods, setPeriods] = useState<Period[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       const courses: Course[] = await fetchProfessorCourses(professor.id);
       courses.sort(compareCourses);
-      const preCoursesMap = new Map<string, Course>();
-      for (const course of courses) {
-        preCoursesMap.set(course.courseName, course);
-      }
-      setCoursesMap(preCoursesMap);
-      setCourses(courses.map((course: Course) => course.courseName));
+      setCourses(courses);
 
       const periods: Period[] = await fetchAllPeriods();
       periods.sort(comparePeriods);
-      const prePeriodsMap = new Map<string, Period>();
-      for (const period of periods) {
-        prePeriodsMap.set(period.name, period);
-      }
-      setPeriodsMap(prePeriodsMap);
-      setPeriods(periods.map((period: Period) => period.name));
+      setPeriods(periods);
     }
 
     if (professor.id) {
@@ -91,23 +71,22 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
     }
   }, [professor.id]);
 
-  async function handleReviewSubmit() {
-    setShowTextFieldError(reviewText === "");
-    setShowRatingError(professorRating < 1);
-    setShowDifficultyError(difficultyRating < 1);
-    setShowCourseError(selectedCourse === "");
-    setShowPeriodError(selectedPeriod === "");
-    setShowGradeError(obtainedGrade < 1);
+  const isThereFormErrors = () => {
+    return (
+      showDifficultyError ||
+      showRatingError ||
+      showTextFieldError ||
+      showCourseError ||
+      showPeriodError ||
+      showGradeError
+    );
+  };
 
-    if (!coursesMap.get(selectedCourse) || !periodsMap.get(selectedPeriod)) {
-      console.error("Error: no course or period selected");
-      return;
-    }
-
-    const reviewObject: CreatedReview = {
-      course: coursesMap.get(selectedCourse)!.id,
-      code: coursesMap.get(selectedCourse)!.code,
-      period: periodsMap.get(selectedPeriod)!.id,
+  const createReviewObject = (professor: { id: string }) => {
+    return {
+      course: selectedCourse!.id,
+      code: selectedCourse!.code,
+      period: selectedPeriod!.id,
       review: reviewText,
       generalRating: professorRating,
       difficultyLevel: difficultyRating,
@@ -115,6 +94,14 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
       wouldEnrollAgain: wouldTakeAgain,
       professorId: professor.id,
     };
+  };
+  const handleReviewSubmit = async () => {
+    if (!selectedCourse || !selectedPeriod) {
+      console.error("Error: no course or period selected");
+      return;
+    }
+
+    const reviewObject: CreatedReview = createReviewObject(professor);
 
     if (authHeader) {
       postReview(reviewObject, authHeader);
@@ -122,21 +109,11 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
       console.error("User tried to post a review, but user is not logged in?");
     }
 
-    if (
-      !(
-        showCourseError ||
-        showPeriodError ||
-        showTextFieldError ||
-        showRatingError ||
-        showDifficultyError ||
-        showGradeError
-      )
-    )
-      onClose();
-  }
+    if (!isThereFormErrors()) handleClose();
+  };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>{`${textConstants.writeAReviewFor} ${professor.name}`}</DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
@@ -147,42 +124,35 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
             setShowError={setShowTextFieldError}
           />
           <CreateReviewRating
-            textRating={textConstants.rating}
             professorRating={professorRating}
             setProfessorRating={setProfessorRating}
             showError={showRatingError}
             setShowError={setShowRatingError}
           />
           <CreateReviewDifficulty
-            difficultyText={textConstants.difficulty}
             difficultyRating={difficultyRating}
             setDifficultyRating={setDifficultyRating}
             showError={showDifficultyError}
             setShowError={setShowDifficultyError}
           />
           <CreateReviewWouldTakeAgain
-            wouldTakeAgainText={textConstants.wouldTakeAgainText}
-            wouldNotTakeAgainText={textConstants.wouldNotTakeAgainText}
             wouldTakeAgain={wouldTakeAgain}
             setWouldTakeAgain={setWouldTakeAgain}
           />
           <CreateReviewObtainedGrade
-            obtainedGradeText={textConstants.obtainedGradeText}
             obtainedGrade={obtainedGrade}
             setObtainedGrade={setObtainedGrade}
             showError={showGradeError}
             setShowError={setShowGradeError}
           />
           <CreateReviewCourses
-            selectClassText={textConstants.selectClassText}
-            classes={courses}
-            selectedClass={selectedCourse}
-            setSelectedClass={setSelectedCourse}
+            courses={courses}
+            selectedCourse={selectedCourse}
+            setSelectedCourse={setSelectedCourse}
             showError={showCourseError}
             setShowError={setShowCourseError}
           />
           <CreateReviewPeriods
-            selectPeriodText={textConstants.selectPeriodText}
             periods={periods}
             selectedPeriod={selectedPeriod}
             setSelectedPeriod={setSelectedPeriod}
@@ -210,21 +180,3 @@ const CreateReview = ({ open, onClose, professor }: CreateReviewProps) => {
 };
 
 export default CreateReview;
-
-const compareCourses = (course1: Course, course2: Course) =>
-  course1.courseName.localeCompare(course2.courseName);
-
-const comparePeriods = (period1: Period, period2: Period) => {
-  // Descending order, prioritizing numbers over strings. E.g: 2023-20, 2023-10, 2022-20, ..., other
-
-  // Extract numeric parts from the strings
-  const num1 = parseInt(period1.name, 10) || 0;
-  const num2 = parseInt(period2.name, 10) || 0;
-  // Compare numeric parts first
-  if (num1 !== num2) {
-    return num2 - num1;
-  }
-
-  // If numeric parts are equal, compare the entire strings
-  return period2.name.localeCompare(period1.name);
-};
