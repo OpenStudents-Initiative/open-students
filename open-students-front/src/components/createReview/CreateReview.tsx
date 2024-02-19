@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { COLORS } from "../../styles/colors.tsx";
 import CreateReviewTextField from "./CreateReviewTextField.tsx";
 import CreateReviewRating from "./CreateReviewRating.tsx";
 import CreateReviewDifficulty from "./CreateReviewDifficulty.tsx";
@@ -18,10 +17,8 @@ import { compareCourses, comparePeriods } from "../../utils/comparisons.ts";
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "../ui/dialog.tsx";
 import { Button } from "../ui/button.tsx";
 
@@ -43,15 +40,13 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
   const [professorRating, setProfessorRating] = useState(1);
   const [wouldTakeAgain, setWouldTakeAgain] = useState(false);
   const [difficultyRating, setDifficultyRating] = useState(1);
-  const [obtainedGrade, setObtainedGrade] = useState(0);
+  const [obtainedGrade, setObtainedGrade] = useState(2.5);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<Period | null>(null);
 
-  const [showDifficultyError, setShowDifficultyError] = useState(false);
   const [showTextFieldError, setShowTextFieldError] = useState(false);
   const [showCourseError, setShowCourseError] = useState(false);
   const [showPeriodError, setShowPeriodError] = useState(false);
-  const [showGradeError, setShowGradeError] = useState(false);
 
   const [courses, setCourses] = useState<Course[]>([]);
   const [periods, setPeriods] = useState<Period[]>([]);
@@ -73,13 +68,7 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
   }, [professor.id]);
 
   const isThereFormErrors = () => {
-    return (
-      showDifficultyError ||
-      showTextFieldError ||
-      showCourseError ||
-      showPeriodError ||
-      showGradeError
-    );
+    return showTextFieldError || showCourseError || showPeriodError;
   };
 
   const createReviewObject = (professor: { id: string }) => {
@@ -132,8 +121,6 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
           <CreateReviewDifficulty
             difficultyRating={difficultyRating}
             setDifficultyRating={setDifficultyRating}
-            showError={showDifficultyError}
-            setShowError={setShowDifficultyError}
           />
           <CreateReviewWouldTakeAgain
             wouldTakeAgain={wouldTakeAgain}
@@ -142,8 +129,6 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
           <CreateReviewObtainedGrade
             obtainedGrade={obtainedGrade}
             setObtainedGrade={setObtainedGrade}
-            showError={showGradeError}
-            setShowError={setShowGradeError}
           />
           <CreateReviewCourses
             courses={courses}

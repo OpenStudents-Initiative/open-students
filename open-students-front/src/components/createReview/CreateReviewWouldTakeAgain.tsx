@@ -1,6 +1,5 @@
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { useIntl } from "react-intl";
+import { Button } from "../ui/button";
 
 interface CreateReviewWouldTakeAgainProps {
   wouldTakeAgain: boolean;
@@ -18,18 +17,24 @@ const CreateReviewWouldTakeAgain = ({
   };
 
   return (
-    <ToggleButtonGroup
-      value={wouldTakeAgain}
-      exclusive
-      onChange={() => setWouldTakeAgain(!wouldTakeAgain)}
-    >
-      <ToggleButton value={true} color="success" sx={{ textTransform: "none" }}>
+    <div className="flex mb-4">
+      <Button
+        onClick={() => setWouldTakeAgain(true)}
+        className={`bg-transparent w-36 h-24 mr-1 whitespace-normal hover:bg-transparent border border-gray-500 ${
+          wouldTakeAgain ? "text-green-500 border-green-500" : "text-gray-600"
+        }`}
+      >
         {textConstants.wouldTakeAgainText}
-      </ToggleButton>
-      <ToggleButton value={false} color="error" sx={{ textTransform: "none" }}>
+      </Button>
+      <Button
+        onClick={() => setWouldTakeAgain(false)}
+        className={`bg-transparent w-36 h-24 whitespace-normal hover:bg-transparent border border-gray-500 ${
+          wouldTakeAgain ? "text-gray-500" : "text-red-500 border-red-500"
+        }`}
+      >
         {textConstants.wouldNotTakeAgainText}
-      </ToggleButton>
-    </ToggleButtonGroup>
+      </Button>
+    </div>
   );
 };
 
