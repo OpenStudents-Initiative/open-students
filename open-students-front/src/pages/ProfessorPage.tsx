@@ -38,10 +38,6 @@ export default function ProfessorPage() {
     setReviewPopupOpen(true);
   };
 
-  const handleCloseReviewPopup = () => {
-    setReviewPopupOpen(false);
-  };
-
   const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
@@ -87,7 +83,7 @@ export default function ProfessorPage() {
         )}
         <CreateReview
           open={isReviewPopupOpen}
-          handleClose={handleCloseReviewPopup}
+          setOpen={setReviewPopupOpen}
           professor={{ id: professorId, ...professor }}
         />
       </div>

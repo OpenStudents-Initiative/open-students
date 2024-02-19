@@ -1,11 +1,4 @@
 import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Button,
-  Stack,
-} from "@mui/material";
 import { useIntl } from "react-intl";
 import { COLORS } from "../../styles/colors.tsx";
 import CreateReviewTextField from "./CreateReviewTextField.tsx";
@@ -22,14 +15,23 @@ import { fetchAllPeriods } from "../../services/periodService.ts";
 import { fetchProfessorCourses } from "../../services/professorService.ts";
 import { postReview } from "../../services/reviewService.ts";
 import { compareCourses, comparePeriods } from "../../utils/comparisons.ts";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../ui/dialog.tsx";
+import { Button } from "../ui/button.tsx";
 
 interface CreateReviewProps {
   open: boolean;
-  handleClose: () => void;
+  setOpen: (value: boolean) => void;
   professor: { name: string; id: string };
 }
 
-const CreateReview = ({ open, handleClose, professor }: CreateReviewProps) => {
+const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
   const intl = useIntl();
   const authHeader = useAuthHeader();
   const textConstants = {
@@ -38,15 +40,14 @@ const CreateReview = ({ open, handleClose, professor }: CreateReviewProps) => {
   };
 
   const [reviewText, setReviewText] = useState("");
-  const [professorRating, setProfessorRating] = useState(0);
+  const [professorRating, setProfessorRating] = useState(1);
   const [wouldTakeAgain, setWouldTakeAgain] = useState(false);
-  const [difficultyRating, setDifficultyRating] = useState(0);
+  const [difficultyRating, setDifficultyRating] = useState(1);
   const [obtainedGrade, setObtainedGrade] = useState(0);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<Period | null>(null);
 
   const [showDifficultyError, setShowDifficultyError] = useState(false);
-  const [showRatingError, setShowRatingError] = useState(false);
   const [showTextFieldError, setShowTextFieldError] = useState(false);
   const [showCourseError, setShowCourseError] = useState(false);
   const [showPeriodError, setShowPeriodError] = useState(false);
@@ -74,7 +75,6 @@ const CreateReview = ({ open, handleClose, professor }: CreateReviewProps) => {
   const isThereFormErrors = () => {
     return (
       showDifficultyError ||
-      showRatingError ||
       showTextFieldError ||
       showCourseError ||
       showPeriodError ||
@@ -109,14 +109,16 @@ const CreateReview = ({ open, handleClose, professor }: CreateReviewProps) => {
       console.error("User tried to post a review, but user is not logged in?");
     }
 
-    if (!isThereFormErrors()) handleClose();
+    if (!isThereFormErrors()) setOpen(false);
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>{`${textConstants.writeAReviewFor} ${professor.name}`}</DialogTitle>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
-        <Stack spacing={2}>
+        <DialogHeader>
+          <DialogTitle>{`${textConstants.writeAReviewFor} ${professor.name}`}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col justify-between">
           <CreateReviewTextField
             reviewText={reviewText}
             setReviewText={setReviewText}
@@ -126,8 +128,6 @@ const CreateReview = ({ open, handleClose, professor }: CreateReviewProps) => {
           <CreateReviewRating
             professorRating={professorRating}
             setProfessorRating={setProfessorRating}
-            showError={showRatingError}
-            setShowError={setShowRatingError}
           />
           <CreateReviewDifficulty
             difficultyRating={difficultyRating}
@@ -160,20 +160,12 @@ const CreateReview = ({ open, handleClose, professor }: CreateReviewProps) => {
             setShowError={setShowPeriodError}
           />
           <Button
-            variant="contained"
             onClick={handleReviewSubmit}
-            sx={{
-              textTransform: "none",
-              color: "white",
-              backgroundColor: COLORS.primary,
-              "&:hover": {
-                backgroundColor: COLORS.dark,
-              },
-            }}
+            className="bg-primary hover:bg-black"
           >
             {textConstants.submitReviewText}
           </Button>
-        </Stack>
+        </div>
       </DialogContent>
     </Dialog>
   );

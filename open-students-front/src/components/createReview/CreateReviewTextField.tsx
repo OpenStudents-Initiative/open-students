@@ -1,5 +1,5 @@
-import { TextField, Typography } from "@mui/material";
 import { useIntl } from "react-intl";
+import { Textarea } from "../ui/textarea";
 
 interface CreateReviewTextFieldProps {
   reviewText: string;
@@ -35,27 +35,22 @@ const CreateReviewTextField = ({
   };
 
   return (
-    <div>
-      <TextField
+    <div className="my-2">
+      <Textarea
+        className="resize-y"
         placeholder={textConstants.createReviewText}
-        multiline
-        rows={4}
-        variant="outlined"
-        fullWidth
         value={reviewText}
         onChange={handleTextFieldChange}
         onBlur={handleBlur}
-        sx={{ resize: "vertical" }}
       />
 
       {showError && (
-        <Typography variant="body2" sx={{ color: "red", marginTop: 1 }}>
+        <span className="text-red-400 mt-2">
           {textConstants.textfieldCannotBeEmpty}
-        </Typography>
+        </span>
       )}
     </div>
   );
 };
 
 export default CreateReviewTextField;
-
