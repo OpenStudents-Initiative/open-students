@@ -57,7 +57,7 @@ export default function ProfessorPage() {
     }
 
     if (professorId) fetchData();
-  }, [professorId]);
+  }, [professorId, reviews]);
 
   return (
     <div className="flex flex-col md:flex-row justify-center gap-8 p-8">
