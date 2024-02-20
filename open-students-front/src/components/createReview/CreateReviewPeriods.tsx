@@ -1,11 +1,15 @@
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
 import { useIntl } from "react-intl";
 import { Period } from "../../utils/types";
 import { useEffect } from "react";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectValue,
+} from "../ui/select";
 
 interface CreateReviewPeriodsProps {
   selectedPeriod: Period | null;
@@ -39,37 +43,38 @@ const CreateReviewPeriods = ({
     selectPeriodText: intl.formatMessage({ id: "selectPeriodText" }),
   };
 
-  const handleSelectChange = (e: { target: { value: string } }) => {
-    setSelectedPeriod(periodMap.get(e.target.value as string)!);
-    setShowError(e.target.value === "");
+  const handleSelectChange = (selectedPeriod: string) => {
+    setSelectedPeriod(periodMap.get(selectedPeriod)!);
+    setShowError(selectedPeriod === "");
   };
 
   return (
-    <FormControl fullWidth>
-      <InputLabel id="selected-period-label">
-        {textConstants.selectPeriodText}
-      </InputLabel>
+    <div className="mb-4">
+      <span id="selected-period-label">{textConstants.selectPeriodText}</span>
       <Select
-        label={textConstants.selectPeriodText}
-        labelId="selected-period-label"
         value={selectedPeriod ? selectedPeriod.name : ""}
-        onChange={handleSelectChange}
+        onValueChange={handleSelectChange}
       >
-        <MenuItem value="" disabled>
-          {textConstants.selectPeriodText}
-        </MenuItem>
-        {periods.map((period, index) => (
-          <MenuItem value={period.name} key={index}>
-            {period.name}
-          </MenuItem>
-        ))}
+        <SelectTrigger>
+          <SelectValue placeholder={textConstants.selectPeriodText} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>{textConstants.selectPeriodText}</SelectLabel>
+            {periods.map((period, index) => (
+              <SelectItem value={period.name} key={index}>
+                {period.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
       </Select>
       {showError && (
-        <Typography variant="body2" sx={{ color: "red", marginTop: 1 }}>
+        <span className="mt-2 text-red-500">
           {textConstants.periodNotSelectedError}
-        </Typography>
+        </span>
       )}
-    </FormControl>
+    </div>
   );
 };
 

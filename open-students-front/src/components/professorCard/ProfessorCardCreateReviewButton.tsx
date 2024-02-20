@@ -1,38 +1,24 @@
-import React from 'react';
-import { useIntl } from 'react-intl';
-import { Box } from '@mui/material';
-import Button from '@mui/joy/Button';
-import { COLORS } from '../../styles/colors';
-
+import React from "react";
+import { useIntl } from "react-intl";
+import { Button } from "../ui/button";
 
 interface Props {
-    makeReview: React.MouseEventHandler<HTMLElement>;
+  makeReview: React.MouseEventHandler<HTMLElement>;
 }
 
-
 const ProfessorCardCreateReviewButton = ({ makeReview }: Props) => {
-    const intl = useIntl();
-    const textConstants = {
-        createReviewText: intl.formatMessage({ id: "createReviewText" }),
-    };
+  const intl = useIntl();
+  const textConstants = {
+    createReviewText: intl.formatMessage({ id: "createReviewText" }),
+  };
 
-    return (
-        <Box sx={{ display: 'flex', '& > button': { flex: 1 } }}>
-            <Button variant="solid"
-                onClick={makeReview}
-                sx={{
-                    color: "white",
-                    backgroundColor: COLORS.primary,
-                    '&:hover': {
-                        backgroundColor: COLORS.dark,
-                    },
-                }}
-            >
-                {textConstants.createReviewText}
-            </Button>
-        </Box >
-    );
+  return (
+    <div className="flex justify-center">
+      <Button className="w-full" onClick={makeReview}>
+        {textConstants.createReviewText}
+      </Button>
+    </div>
+  );
 };
-
 
 export default ProfessorCardCreateReviewButton;

@@ -1,9 +1,8 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Header from "./components/Header.tsx";
+import { useEffect } from "react";
+import NavBar from "./components/NavBar.tsx";
 import Footer from "./components/Footer.tsx";
 import ProfessorPage from "./pages/ProfessorPage.tsx";
-import "./styles/App.css";
 import AuthPage from "./pages/AuthPage.tsx";
 import {
   AUTH_ROUTE,
@@ -22,24 +21,26 @@ export default function App() {
 
   return (
     <div className="App">
-      <Header />
+      <NavBar />
       <ScrollToTop />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            currentProfessorId ? <ProfessorPage /> : <div>Landing page</div>
-          }
-        />
-        <Route path={AUTH_ROUTE} element={<AuthPage />} />
-        {authenticated && (
-          <>
-            <Route path={PROFESSORS_ROUTE} element={<ProfessorPage />} />
-            <Route path={AUTH_ROUTE} element={<Redirect />} />
-            <Route path={PROFILE_ROUTE} element={<div>Profile page</div>} />
-          </>
-        )}
-      </Routes>
+      <div className="p-4">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              currentProfessorId ? <ProfessorPage /> : <div>Landing page</div>
+            }
+          />
+          <Route path={AUTH_ROUTE} element={<AuthPage />} />
+          {authenticated && (
+            <>
+              <Route path={PROFESSORS_ROUTE} element={<ProfessorPage />} />
+              <Route path={AUTH_ROUTE} element={<Redirect />} />
+              <Route path={PROFILE_ROUTE} element={<div>Profile page</div>} />
+            </>
+          )}
+        </Routes>
+      </div>
       <Footer />
     </div>
   );

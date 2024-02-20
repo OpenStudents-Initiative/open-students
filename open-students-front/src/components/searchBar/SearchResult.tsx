@@ -17,7 +17,7 @@ export const SearchResult = ({
 }: SearchResultProps) => {
   return (
     <div
-      className="search-result"
+      className="p-4 hover:bg-primary hover:text-background cursor-pointer"
       onClick={() => {
         setCurrentProfessorId(result.id);
         setShowResults(false);

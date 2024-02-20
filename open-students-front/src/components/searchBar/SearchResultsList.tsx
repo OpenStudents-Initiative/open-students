@@ -13,8 +13,12 @@ export const SearchResultsList = ({
   setCurrentProfessorId,
   setShowResults,
 }: SearchResultsListProps) => {
+  if (results.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="results-list">
+    <div className="bg-background rounded-md absolute top-20 left-1/2 transform -translate-x-1/2 max-w-screen-lg min-w-96 border border-primary">
       {results.map((result, id) => {
         return (
           <SearchResult

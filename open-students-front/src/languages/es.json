@@ -37,5 +37,10 @@
   "periodNotSelectedError": "Por favor selecciona un periodo.",
   "headerProfile": "Perfil",
   "headerLogout": "Cerrar sesión",
-  "headerAccount": "Cuenta"
+  "headerAccount": "Cuenta",
+  "noResultsFound": "No se encontraron resultados",
+  "password": "Contraseña",
+  "email": "Correo",
+  "login": "Iniciar sesión",
+  "signin": "Registrarse"
 }

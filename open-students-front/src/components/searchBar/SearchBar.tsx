@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
 import "../../styles/SearchBar.css";
 import { useIntl } from "react-intl";
 import levensthein from "js-levenshtein";
 import { fetchProfessorsWithKeys } from "../../services/professorService";
+import { Card } from "../ui/card";
+import { Input } from "../ui/input";
 
 interface SearchBarProps {
   results: Array<{ name: string; id: string }>;
@@ -31,25 +32,25 @@ const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
       setResults([]);
       return;
     }
-    console.log("Searching for professors");
 
     const profs = professorNamesToStrList(input, professorNames);
     setResults(profs);
 
-    console.log("Setting show results");
-
     setShowResults(results && results.length > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input]);
 
   return (
-    <div className="input-wrapper">
-      <FaSearch id="search-icon" />
-      <input
+    <Card className="w-1/3 flex p-2">
+      <Input
+        className="w-1/"
         placeholder={searchProfessors}
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        onFocus={() => setShowResults(true)}
+        onBlur={() => setTimeout(() => setShowResults(false), 200)}
       />
-    </div>
+    </Card>
   );
 };
 
@@ -58,7 +59,7 @@ export default SearchBar;
 async function fetchAndSetProfessorNames(
   setProfessorNames: React.Dispatch<
     React.SetStateAction<{ name: string; id: string }[]>
-  >,
+  >
 ) {
   const professorNames = await fetchProfessorsWithKeys(["name", "id"]);
   setProfessorNames(professorNames);
@@ -66,7 +67,7 @@ async function fetchAndSetProfessorNames(
 
 function professorNamesToStrList(
   input: string,
-  professorNames: { name: string; id: string }[],
+  professorNames: { name: string; id: string }[]
 ) {
   const sortedProfNames: { name: string; id: string }[] = professorNames
     .map((value) => {

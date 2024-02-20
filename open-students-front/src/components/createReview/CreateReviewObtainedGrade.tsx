@@ -1,60 +1,51 @@
-import FormControl from "@mui/material/FormControl";
-import Slider from "@mui/material/Slider";
-import Typography from "@mui/material/Typography";
 import { useIntl } from "react-intl";
+import { Slider } from "../ui/slider";
+import { useEffect, useState } from "react";
 
 interface CreateReviewObtainedGradeProps {
   obtainedGrade: number;
   setObtainedGrade: (value: number) => void;
-  showError: boolean;
-  setShowError: (value: boolean) => void;
 }
-
 const CreateReviewObtainedGrade = ({
   obtainedGrade,
   setObtainedGrade,
-  showError,
-  setShowError,
 }: CreateReviewObtainedGradeProps) => {
   const intl = useIntl();
   const textConstants = {
     minimumGradeError: intl.formatMessage({ id: "minimumGradeError" }),
     obtainedGradeText: intl.formatMessage({ id: "obtainedGradeText" }),
   };
-
-  const handleSliderChange = (_e: Event, value: number | number[]) => {
+  const handleSliderChange = (value: number | number[]) => {
     const newValue = Array.isArray(value) ? value[0] : value;
     setObtainedGrade(newValue);
-    setShowError(newValue < 1.5);
   };
 
+  const [trackThumbColor, setTrackThumbColor] = useState("");
+
+  useEffect(() => {
+    if (obtainedGrade < 3) {
+      setTrackThumbColor("red");
+    } else if (obtainedGrade < 3.75) {
+      setTrackThumbColor("yellow");
+    } else {
+      setTrackThumbColor("green");
+    }
+  }, [obtainedGrade]);
+
   return (
-    <FormControl fullWidth>
+    <div className="mb-2">
       <Slider
-        value={obtainedGrade}
+        value={[obtainedGrade]}
+        defaultValue={[2.5]}
         min={1.5}
         max={5}
         step={0.01}
-        valueLabelDisplay="auto"
-        onChange={handleSliderChange}
-        aria-labelledby="obtained-grade-label"
-        color={
-          obtainedGrade < 3
-            ? "error"
-            : obtainedGrade <= 3.6
-              ? "warning"
-              : "success"
-        }
+        onValueChange={handleSliderChange}
+        classNameTrack={`bg-${trackThumbColor}-500 transition-colors duration-500`}
+        classNameThumb={`border-${trackThumbColor}-500 transition-colors duration-500`}
       />
-      <Typography variant="body2" gutterBottom>
-        {`${textConstants.obtainedGradeText}: ${obtainedGrade}`}
-      </Typography>
-      {showError && (
-        <Typography variant="body2" sx={{ color: "red", marginTop: 1 }}>
-          {textConstants.minimumGradeError}
-        </Typography>
-      )}
-    </FormControl>
+      <span>{`${textConstants.obtainedGradeText}: ${obtainedGrade}`}</span>
+    </div>
   );
 };
 
