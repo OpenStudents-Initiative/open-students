@@ -19,7 +19,7 @@ Before running the mock API, make sure you have the following dependencies insta
 
 2. Install the project dependencies:
     ```
-    npm install express body-parser cors uuid
+    npm install
     ```
 
 ### Running the API
