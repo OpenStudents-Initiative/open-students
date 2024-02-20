@@ -41,7 +41,7 @@ export default function NavBar() {
   const [showResults, setShowResults] = useState(false);
 
   return (
-    <nav className="bg-background flex justify-between items-center p-4 shadow-md sticky top-0 right-0 left-0">
+    <nav className="bg-background flex justify-between items-center p-4 shadow-md sticky top-0 right-0 left-0 z-50">
       <LogoOpenStudents text={textConstants.openStudents} navigate={navigate} />
       {userAuthenticated && (
         <>
