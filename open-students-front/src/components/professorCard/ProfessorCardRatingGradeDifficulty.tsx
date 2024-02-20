@@ -30,15 +30,13 @@ const ProfessorCardRatingGradeDifficulty = ({
   return (
     <div className="bg-secondary p-2 rounded-md my-6">
       <div className="grid grid-cols-3 gap-2">
-        {textsAndNumbers.map(([text, num]) => (
-          <>
-            <div key={text} className="text-xs font-medium ">
+        {textsAndNumbers.map(([text, num], index) => (
+            <div key={index} className="text-xs font-medium ">
               {text}
               <div className="text-lg font-semibold">
                 {roundOrHyphen(num as number)}
               </div>
             </div>
-          </>
         ))}
       </div>
     </div>
