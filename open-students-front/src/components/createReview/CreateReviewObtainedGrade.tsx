@@ -1,5 +1,6 @@
 import { useIntl } from "react-intl";
 import { Slider } from "../ui/slider";
+import { useEffect, useState } from "react";
 
 interface CreateReviewObtainedGradeProps {
   obtainedGrade: number;
@@ -19,6 +20,18 @@ const CreateReviewObtainedGrade = ({
     setObtainedGrade(newValue);
   };
 
+  const [trackThumbColor, setTrackThumbColor] = useState("");
+
+  useEffect(() => {
+    if (obtainedGrade < 3) {
+      setTrackThumbColor("red");
+    } else if (obtainedGrade < 3.75) {
+      setTrackThumbColor("yellow");
+    } else {
+      setTrackThumbColor("green");
+    }
+  }, [obtainedGrade]);
+
   return (
     <div>
       <Slider
@@ -28,8 +41,8 @@ const CreateReviewObtainedGrade = ({
         max={5}
         step={0.01}
         onValueChange={handleSliderChange}
-        classNameTrack={`bg-red-500`}
-        classNameThumb={`border-red-500`}
+        classNameTrack={`bg-${trackThumbColor}-500 transition-colors duration-500`}
+        classNameThumb={`border-${trackThumbColor}-500 transition-colors duration-500`}
       />
       <span>{`${textConstants.obtainedGradeText}: ${obtainedGrade}`}</span>
     </div>

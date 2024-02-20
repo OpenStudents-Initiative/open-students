@@ -8,6 +8,15 @@ module.exports = {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
+  safelist: [
+    // Keep these so that slider dynamic assign works properly
+    "bg-red-500",
+    "bg-yellow-500",
+    "bg-green-500",
+    "border-red-500",
+    "border-yellow-500",
+    "border-green-500",
+  ],
   prefix: "",
   theme: {
     container: {
