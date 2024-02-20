@@ -2,7 +2,7 @@ import { IntlShape, useIntl } from "react-intl";
 import SearchBar from "./searchBar/SearchBar";
 import { SearchResultsList } from "./searchBar/SearchResultsList";
 import { useState } from "react";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 import { SetterOrUpdater, useSetRecoilState } from "recoil";
 import { currentProfessorIdState } from "../atoms/defaultAtoms";
 import { AUTH_ROUTE, HOME_ROUTE, PROFILE_ROUTE } from "../utils/consts";
@@ -42,7 +42,7 @@ export default function NavBar() {
 
   return (
     <nav className="bg-background flex justify-between items-center p-4 shadow-md sticky top-0 right-0 left-0 z-50">
-      <LogoOpenStudents text={textConstants.openStudents} navigate={navigate} />
+      <LogoOpenStudents />
       {userAuthenticated && (
         <>
           <SearchBar
@@ -74,19 +74,14 @@ export default function NavBar() {
   );
 }
 
-const LogoOpenStudents = ({
-  text,
-  navigate,
-}: {
-  text: string;
-  navigate: NavigateFunction;
-}) => (
-  <div
-    className="text-primary text-2xl font-bold cursor-pointer"
-    onClick={() => navigate("/")}
-  >
-    {text}
-  </div>
+const LogoOpenStudents = () => (
+  <Link to={HOME_ROUTE}>
+    <img
+      className="h-8"
+      src="openstudents-high-resolution-logo-transparent.png"
+      alt="Logo Open Students"
+    />
+  </Link>
 );
 
 const LoginButton = ({

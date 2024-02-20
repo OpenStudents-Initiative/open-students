@@ -43,7 +43,7 @@ const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
   return (
     <Card className="w-1/3 flex p-2">
       <Input
-        className="w-1/"
+        className="w-1/ h-6"
         placeholder={searchProfessors}
         value={input}
         onChange={(e) => setInput(e.target.value)}
