@@ -17,7 +17,7 @@ const CreateReviewWouldTakeAgain = ({
   };
 
   return (
-    <div className="flex mb-4">
+    <div className="flex mb-6">
       <Button
         onClick={() => setWouldTakeAgain(true)}
         className={`bg-transparent w-36 h-24 mr-1 whitespace-normal hover:bg-transparent border border-gray-500 ${

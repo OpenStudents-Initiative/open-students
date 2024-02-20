@@ -33,7 +33,7 @@ const CreateReviewObtainedGrade = ({
   }, [obtainedGrade]);
 
   return (
-    <div>
+    <div className="mb-2">
       <Slider
         value={[obtainedGrade]}
         defaultValue={[2.5]}

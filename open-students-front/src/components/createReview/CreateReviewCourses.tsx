@@ -1,11 +1,15 @@
 import React, { memo, useEffect } from "react";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
 import { useIntl } from "react-intl";
 import { Course } from "../../utils/types";
+import {
+  Select,
+  SelectItem,
+  SelectLabel,
+  SelectGroup,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface CreateReviewCoursesProps {
   selectedCourse: Course | null;
@@ -34,37 +38,38 @@ const CreateReviewCourses: React.FC<CreateReviewCoursesProps> = memo(
       selectClassText: intl.formatMessage({ id: "selectClassText" }),
     };
 
-    const handleSelectChange = (e: { target: { value: string } }) => {
-      setSelectedCourse(courseMap.get(e.target.value as string)!);
-      setShowError(e.target.value === "");
+    const handleSelectChange = (selectedCourse: string) => {
+      setSelectedCourse(courseMap.get(selectedCourse)!);
+      setShowError(selectedCourse === "");
     };
 
     return (
-      <FormControl fullWidth>
-        <InputLabel id="selected-class-label">
-          {textConstants.selectClassText}
-        </InputLabel>
+      <div className="mb-1">
+        <span id="selected-period-label">{textConstants.selectClassText}</span>
         <Select
-          label={textConstants.selectClassText}
-          labelId="selected-class-label"
           value={selectedCourse ? selectedCourse.courseName : ""}
-          onChange={handleSelectChange}
+          onValueChange={handleSelectChange}
         >
-          <MenuItem value="" disabled>
-            {textConstants.selectClassText}
-          </MenuItem>
-          {courses.map((course, index) => (
-            <MenuItem value={course.courseName} key={index}>
-              {course.courseName}
-            </MenuItem>
-          ))}
+          <SelectTrigger>
+            <SelectValue placeholder={textConstants.selectClassText} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>{textConstants.selectClassText}</SelectLabel>
+              {courses.map((course, index) => (
+                <SelectItem value={course.courseName} key={index}>
+                  {course.courseName}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
         </Select>
         {showError && (
-          <Typography variant="body2" sx={{ color: "red", marginTop: 1 }}>
+          <span className="mt-2 text-red-500">
             {textConstants.courseNotSelectedError}
-          </Typography>
+          </span>
         )}
-      </FormControl>
+      </div>
     );
   },
 );

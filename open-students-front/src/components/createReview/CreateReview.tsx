@@ -86,7 +86,8 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
   };
   const handleReviewSubmit = async () => {
     if (!selectedCourse || !selectedPeriod) {
-      console.error("Error: no course or period selected");
+      setShowCourseError(!selectedCourse);
+      setShowPeriodError(!selectedPeriod);
       return;
     }
 
