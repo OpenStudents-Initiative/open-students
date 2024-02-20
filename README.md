@@ -13,9 +13,9 @@ OpenStudents is a modern web platform designed to empower students to make infor
 - **Open Source Ethos:** Transparency extends to our codebase. Feel free to participate in development, make contributions, and help shape the future of OpenStudents.
 - **Future-Proof:** We're tirelessly working to develop a robust backend to power advanced features like personalized recommendations, search, and more.
 
-## Getting Started
+## Current release
 
-[![OpenStudents Image](https://github.com/OpenStudents-Initiative/open-students/assets/87380139/3bbcbe29-522a-43c0-bed8-e038f3bc7c2d)]()
+![openStudentsDemo](https://github.com/OpenStudents-Initiative/open-students/assets/88688814/f9e39b5e-c5ab-4a2f-a786-d7cd6860951e)
 
 The current iteration of OpenStudents includes:
 
@@ -33,7 +33,11 @@ We've carefully chosen modern technologies to deliver a seamless experience:
 - **FastAPI:** (Upcoming) High-performance Python backend framework for robust APIs.
 - **Docker:** (Upcoming) Streamlined containerization for simplified deployment.
 
-### Make sure to check out our class diagram as well right [here!](http://tinyurl.com/openclassdiagram)
+Make sure to check out our **class diagram** as well right [here!](http://tinyurl.com/openclassdiagram)
+
+## Upcoming features
+
+The vision of the page is to become a center of student opinions and experiences, based on freedom of expression and mutual respect. This platform aims to serve the entire educational community by providing relevant information to take informed decisions about where to study, which courses to take, which professors to select, and other crucial decisions related to their academic formation. OpenStudents will be a powerful yet simple tool that provides valuable information for students to empower themselves in decision-making regarding their academic future.
 
 ## Contributing
 
