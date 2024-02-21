@@ -1,0 +1,9 @@
+[submodule "open-students-front"]
+	path = open-students-front
+	url = git@github.com:OpenStudents-Initiative/open-students-front.git
+[submodule "open-students-back"]
+	path = open-students-back
+	url = git@github.com:OpenStudents-Initiative/open-students-back.git
+[submodule "open-students-mock-back"]
+	path = open-students-mock-back
+	url = git@github.com:OpenStudents-Initiative/open-students-mock-back.git
