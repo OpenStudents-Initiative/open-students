@@ -5,3 +5,8 @@ export const currentProfessorIdState = atom({
   key: "currentProfessorIdState",
   default: "",
 });
+
+export const currentNavbarFocus = atom({
+  key: "currentNavbarFocus",
+  default: false,
+});

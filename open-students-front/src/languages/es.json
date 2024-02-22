@@ -42,5 +42,11 @@
   "password": "Contraseña",
   "email": "Correo",
   "login": "Iniciar sesión",
-  "signin": "Registrarse"
+  "signin": "Registrarse",
+  "landingTitle": "OpenStudents: Decisiones Estudiantiles Informadas",
+  "landingDescriptor": "Encuentra reseñas honestas de profesores y cursos para tomar mejores decisiones.",
+  "landingBulletSearch": "Busca reseñas por profesor, curso o palabra clave",
+  "landingBulletRead": "Obtén perspectivas valiosas de otros estudiantes",
+  "landingBulletReview": "Comparte tus experiencias y ayuda a otros",
+  "landingStartedButton": "Empieza a Explorar Reseñas"
 }
