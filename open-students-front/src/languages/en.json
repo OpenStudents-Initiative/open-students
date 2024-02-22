@@ -48,5 +48,6 @@
   "landingBulletSearch": "Search reviews by professor, course, or keyword",
   "landingBulletRead": "Get valuable insights from fellow students",
   "landingBulletReview": "Share your experiences and help others",
-  "landingStartedButton": "Start Exploring Reviews"
+  "landingStartedButton": "Start Exploring Reviews",
+  "landingLoginButton": "Login to view more"
 }

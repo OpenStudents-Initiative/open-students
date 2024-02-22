@@ -2,9 +2,14 @@ import { useIntl } from "react-intl";
 import { Button } from "@/components/ui/button";
 import { useSetRecoilState } from "recoil";
 import { currentNavbarFocus } from "@/atoms/defaultAtoms";
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
+import { useNavigate } from "react-router-dom";
+import { AUTH_ROUTE } from "@/utils/consts";
 
 const LandingPage = () => {
   const intl = useIntl();
+  const loggedIn = useIsAuthenticated()();
+  const navigate = useNavigate();
   const setSearchBarFocus = useSetRecoilState(currentNavbarFocus);
 
   const textConstants = {
@@ -14,6 +19,7 @@ const LandingPage = () => {
     landingBulletRead: intl.formatMessage({ id: "landingBulletRead" }),
     landingBulletReview: intl.formatMessage({ id: "landingBulletReview" }),
     landingStartedButton: intl.formatMessage({ id: "landingStartedButton" }),
+    landingLoginButton: intl.formatMessage({ id: "landingLoginButton" }),
   };
 
   return (
@@ -27,8 +33,19 @@ const LandingPage = () => {
         <li>• {textConstants.landingBulletRead}</li>
         <li>• {textConstants.landingBulletReview}</li>
       </ul>
-      <Button className="w-64" onClick={() => setSearchBarFocus(true)}>
-        {textConstants.landingStartedButton}
+      <Button
+        className="w-64"
+        onClick={() => {
+          if (loggedIn) {
+            setSearchBarFocus(true);
+          } else {
+            navigate(AUTH_ROUTE);
+          }
+        }}
+      >
+        {loggedIn
+          ? textConstants.landingStartedButton
+          : textConstants.landingLoginButton}
       </Button>
     </div>
   );
