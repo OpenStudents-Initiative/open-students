@@ -42,5 +42,12 @@
   "password": "Password",
   "email": "Email",
   "login": "Log in",
-  "signin": "Sign in"
+  "signin": "Sign in",
+  "landingTitle": "OpenStudents: Empowering Student Decisions",
+  "landingDescriptor": "Find honest professor and course reviews to make informed choices.",
+  "landingBulletSearch": "Search reviews by professor, course, or keyword",
+  "landingBulletRead": "Get valuable insights from fellow students",
+  "landingBulletReview": "Share your experiences and help others",
+  "landingStartedButton": "Start Exploring Reviews",
+  "landingLoginButton": "Login to view more"
 }
