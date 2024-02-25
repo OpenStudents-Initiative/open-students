@@ -2,7 +2,7 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import type { Period } from "../utils/types";
 
-export async function fetchAllPeriods() {
+async function fetchAllPeriods() {
   try {
     const periods = (await axios.get(`${apiUrl}/periods`)).data as Period[];
     return periods;
@@ -11,3 +11,12 @@ export async function fetchAllPeriods() {
     return [];
   }
 }
+
+const periodService = {
+  fetchAllPeriods,
+};
+
+type PeriodService = typeof periodService;
+
+export default periodService;
+export type { PeriodService };

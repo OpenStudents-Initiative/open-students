@@ -11,6 +11,11 @@ import createAuthStore from "react-auth-kit/createStore";
 import { runningInProd } from "./config.ts";
 import AuthProvider from "react-auth-kit/AuthProvider";
 import { UserSessionData } from "./utils/types.ts";
+import { ServiceProvider } from "./contexts/ServiceContext.tsx";
+import authService from "./services/authService.ts";
+import periodService from "./services/periodService.ts";
+import professorService from "./services/professorService.ts";
+import reviewService from "./services/reviewService.ts";
 
 const authStore = createAuthStore<UserSessionData>({
   authName: "_auth",
@@ -31,15 +36,24 @@ function getMessages(lang: string) {
   }
 }
 
+const services = {
+  authService,
+  periodService,
+  professorService,
+  reviewService,
+};
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <RecoilRoot>
       <AuthProvider store={authStore}>
-        <BrowserRouter>
-          <IntlProvider locale={lang} messages={messages}>
-            <App />
-          </IntlProvider>
-        </BrowserRouter>
+        <ServiceProvider {...services}>
+          <BrowserRouter>
+            <IntlProvider locale={lang} messages={messages}>
+              <App />
+            </IntlProvider>
+          </BrowserRouter>
+        </ServiceProvider>
       </AuthProvider>
     </RecoilRoot>
   </React.StrictMode>,

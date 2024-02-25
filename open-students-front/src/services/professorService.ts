@@ -2,7 +2,7 @@ import axios from "axios";
 import { Course, Professor, Review } from "../utils/types";
 import { apiUrl } from "../config";
 
-export async function fetchProfessorsWithKeys(keys: string[]) {
+async function fetchProfessorsWithKeys(keys: string[]) {
   try {
     const professors: any[] = (
       await axios.get(`${apiUrl}/professors`, {
@@ -18,7 +18,7 @@ export async function fetchProfessorsWithKeys(keys: string[]) {
   }
 }
 
-export async function fetchProfessorById(id: string) {
+async function fetchProfessorById(id: string) {
   try {
     const professor: Professor = (await axios.get(`${apiUrl}/professors/${id}`))
       .data;
@@ -29,7 +29,7 @@ export async function fetchProfessorById(id: string) {
   }
 }
 
-export async function fetchProfessorReviews(id: string) {
+async function fetchProfessorReviews(id: string) {
   try {
     const reviews: Review[] = (
       await axios.get(`${apiUrl}/professors/${id}/reviews`)
@@ -41,7 +41,7 @@ export async function fetchProfessorReviews(id: string) {
   }
 }
 
-export async function fetchProfessorCourses(id: string) {
+async function fetchProfessorCourses(id: string) {
   try {
     const courses: Course[] = (
       await axios.get(`${apiUrl}/professors/${id}/courses`)
@@ -52,3 +52,15 @@ export async function fetchProfessorCourses(id: string) {
     return [];
   }
 }
+
+const professorService = {
+  fetchProfessorsWithKeys,
+  fetchProfessorById,
+  fetchProfessorCourses,
+  fetchProfessorReviews,
+};
+
+type ProfessorService = typeof professorService;
+
+export default professorService;
+export type { ProfessorService };

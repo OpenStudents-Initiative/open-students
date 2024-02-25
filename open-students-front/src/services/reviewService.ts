@@ -2,7 +2,7 @@ import axios from "axios";
 import { CreatedReview } from "../utils/types";
 import { apiUrl } from "../config";
 
-export async function postReview(review: CreatedReview, authHeader: string) {
+async function postReview(review: CreatedReview, authHeader: string) {
   try {
     axios.post(`${apiUrl}/reviews`, review, {
       headers: {
@@ -13,3 +13,12 @@ export async function postReview(review: CreatedReview, authHeader: string) {
     console.error(`Error inserting review: ${error}`);
   }
 }
+
+const reviewService = {
+  postReview,
+};
+
+type ReviewService = typeof reviewService;
+
+export default reviewService;
+export type { ReviewService };
