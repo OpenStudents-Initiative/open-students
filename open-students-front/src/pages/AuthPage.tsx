@@ -2,11 +2,11 @@ import { useState } from "react";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
 import { HOME_ROUTE } from "../utils/consts";
 import { useNavigate } from "react-router-dom";
-import { fetchLogin } from "../services/authService";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useIntl } from "react-intl";
 import { Button } from "@/components/ui/button";
+import { useAuthService } from "@/contexts/ServiceContext";
 
 export default function AuthPage() {
   const intl = useIntl();
@@ -15,6 +15,7 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const signIn = useSignIn();
   const navigate = useNavigate();
+  const { fetchLogin } = useAuthService();
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -22,7 +23,7 @@ export default function AuthPage() {
 
     if (!responseData) {
       setError(
-        "There has been a problem with the login endpoint, please try again later"
+        "There has been a problem with the login endpoint, please try again later",
       );
       return;
     }

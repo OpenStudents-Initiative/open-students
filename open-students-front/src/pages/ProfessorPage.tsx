@@ -6,13 +6,11 @@ import CreateReview from "../components/createReview/CreateReview.tsx";
 import { currentProfessorIdState } from "../atoms/defaultAtoms.ts";
 import { useRecoilValue } from "recoil";
 import { Professor, Review } from "../utils/types.ts";
-import {
-  fetchProfessorById,
-  fetchProfessorReviews,
-} from "../services/professorService.ts";
+import { useProfessorService } from "@/contexts/ServiceContext.tsx";
 
 export default function ProfessorPage() {
   const intl = useIntl();
+  const { fetchProfessorById, fetchProfessorReviews } = useProfessorService();
   const professorId = useRecoilValue(currentProfessorIdState);
   const textConstants = {
     noReviewsYet: intl.formatMessage({ id: "noReviewsYet" }),
