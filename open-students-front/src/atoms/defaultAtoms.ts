@@ -1,4 +1,3 @@
-import { Session } from "@supabase/supabase-js";
 import { atom } from "recoil";
 
 // Make recoil atoms for current professorId
@@ -7,7 +6,7 @@ export const currentProfessorIdState = atom({
   default: "",
 });
 
-export const sessionState = atom<Session | null>({
-  key: "sessionState",
-  default: null,
+export const currentNavbarFocus = atom({
+  key: "currentNavbarFocus",
+  default: false,
 });

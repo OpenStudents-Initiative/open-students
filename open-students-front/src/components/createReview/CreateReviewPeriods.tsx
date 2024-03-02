@@ -1,63 +1,81 @@
-import React from 'react';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import { useIntl } from 'react-intl';
+import { useIntl } from "react-intl";
+import { Period } from "../../utils/types";
+import { useEffect } from "react";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectValue,
+} from "../ui/select";
 
 interface CreateReviewPeriodsProps {
-    selectPeriodText: string;
-    selectedPeriod: string;
-    setSelectedPeriod: React.Dispatch<React.SetStateAction<string>>;
-    periods: string[];
-    showError: boolean;
-    setShowError: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedPeriod: Period | null;
+  setSelectedPeriod: (value: Period) => void;
+  periods: Period[];
+  showError: boolean;
+  setShowError: (value: boolean) => void;
 }
 
 const CreateReviewPeriods = ({
-    selectPeriodText,
-    selectedPeriod,
-    setSelectedPeriod,
-    periods,
-    showError,
-    setShowError,
+  selectedPeriod,
+  setSelectedPeriod,
+  periods,
+  showError,
+  setShowError,
 }: CreateReviewPeriodsProps) => {
-    const intl = useIntl();
-    const textConstants = {
-        periodNotSelectedError: intl.formatMessage({ id: 'periodNotSelectedError' }),
-    };
+  const intl = useIntl();
+  const periodMap = new Map<string, Period>();
 
-    const handleSelectChange = (e: { target: { value: string; }; }) => {
-        setSelectedPeriod(e.target.value as string);
-        setShowError(e.target.value === '');
-    };
+  useEffect(() => {
+    periodMap.clear();
+    periods.forEach((period) => {
+      periodMap.set(period.name, period);
+    });
+  });
 
-    return (
-        <FormControl fullWidth>
-            <InputLabel id="selected-period-label">{selectPeriodText}</InputLabel>
-            <Select
-                label={selectPeriodText}
-                labelId="selected-period-label"
-                value={selectedPeriod}
-                onChange={handleSelectChange}
-            >
-                <MenuItem value="" disabled>
-                    {selectPeriodText}
-                </MenuItem>
-                {periods.map((period, index) => (
-                    <MenuItem value={period} key={index}>
-                        {period}
-                    </MenuItem>
-                ))}
-            </Select>
-            {showError && (
-                <Typography variant="body2" sx={{ color: 'red', marginTop: 1 }}>
-                    {textConstants.periodNotSelectedError}
-                </Typography>
-            )}
-        </FormControl>
-    );
+  const textConstants = {
+    periodNotSelectedError: intl.formatMessage({
+      id: "periodNotSelectedError",
+    }),
+    selectPeriodText: intl.formatMessage({ id: "selectPeriodText" }),
+  };
+
+  const handleSelectChange = (selectedPeriod: string) => {
+    setSelectedPeriod(periodMap.get(selectedPeriod)!);
+    setShowError(selectedPeriod === "");
+  };
+
+  return (
+    <div className="mb-4">
+      <span id="selected-period-label">{textConstants.selectPeriodText}</span>
+      <Select
+        value={selectedPeriod ? selectedPeriod.name : ""}
+        onValueChange={handleSelectChange}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder={textConstants.selectPeriodText} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>{textConstants.selectPeriodText}</SelectLabel>
+            {periods.map((period, index) => (
+              <SelectItem value={period.name} key={index}>
+                {period.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      {showError && (
+        <span className="mt-2 text-red-500">
+          {textConstants.periodNotSelectedError}
+        </span>
+      )}
+    </div>
+  );
 };
 
 export default CreateReviewPeriods;

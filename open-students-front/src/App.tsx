@@ -1,12 +1,8 @@
-/* eslint-disable */
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Header from "./components/Header.tsx";
+import { useEffect } from "react";
+import NavBar from "./components/NavBar.tsx";
 import Footer from "./components/Footer.tsx";
 import ProfessorPage from "./pages/ProfessorPage.tsx";
-import "./styles/App.css";
-import { createClient } from "@supabase/supabase-js";
-import { Session } from "@supabase/gotrue-js";
 import AuthPage from "./pages/AuthPage.tsx";
 import {
   AUTH_ROUTE,
@@ -14,49 +10,36 @@ import {
   PROFESSORS_ROUTE,
   PROFILE_ROUTE,
 } from "./utils/consts.ts";
-import { useRecoilState } from "recoil";
-import { sessionState } from "./atoms/defaultAtoms.ts";
-
-const supabaseUrl = "https://hrrhahxbkzgqdpodbvwh.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhycmhhaHhia3pncWRwb2RidndoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMzM5MTE4OSwiZXhwIjoyMDE4OTY3MTg5fQ.kvz-noo-B2X6E40h7aONVDVuAfeCuzysq3L04_QhdcQ";
-export const supabase = createClient(supabaseUrl, supabaseKey);
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
+import { useRecoilValue } from "recoil";
+import { currentProfessorIdState } from "./atoms/defaultAtoms.ts";
+import LandingPage from "./pages/LandingPage.tsx";
 
 export default function App() {
-  const [session, setSession] = useRecoilState(sessionState);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const isAuthenticated = useIsAuthenticated();
+  const authenticated = isAuthenticated();
+  const currentProfessorId = useRecoilValue(currentProfessorIdState);
 
   return (
     <div className="App">
-      <Header session={session} />
+      <NavBar />
       <ScrollToTop />
-      <Routes>
-        <Route
-          path="/"
-          element={session ? <ProfessorPage /> : <div>Landing page</div>}
-        />
-        {!session && <Route path={AUTH_ROUTE} element={<AuthPage />} />}
-        {session && (
-          <>
-            <Route path={PROFESSORS_ROUTE} element={<ProfessorPage />} />
-            <Route path={AUTH_ROUTE} element={<Redirect />} />
-            <Route path={PROFILE_ROUTE} element={<div>Profile page</div>} />
-          </>
-        )}
-      </Routes>
+      <div className="p-4">
+        <Routes>
+          <Route
+            path="/"
+            element={currentProfessorId ? <ProfessorPage /> : <LandingPage />}
+          />
+          <Route path={AUTH_ROUTE} element={<AuthPage />} />
+          {authenticated && (
+            <>
+              <Route path={PROFESSORS_ROUTE} element={<ProfessorPage />} />
+              <Route path={AUTH_ROUTE} element={<Redirect />} />
+              <Route path={PROFILE_ROUTE} element={<div>Profile page</div>} />
+            </>
+          )}
+        </Routes>
+      </div>
       <Footer />
     </div>
   );

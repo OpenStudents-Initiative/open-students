@@ -1,63 +1,77 @@
-import React from 'react';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import { useIntl } from 'react-intl';
+import React, { memo, useEffect } from "react";
+import { useIntl } from "react-intl";
+import { Course } from "../../utils/types";
+import {
+  Select,
+  SelectItem,
+  SelectLabel,
+  SelectGroup,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface CreateReviewCoursesProps {
-    selectClassText: string;
-    selectedClass: string;
-    setSelectedClass: React.Dispatch<React.SetStateAction<string>>;
-    classes: string[];
-    showError: boolean;
-    setShowError: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedCourse: Course | null;
+  setSelectedCourse: (value: Course) => void;
+  courses: Course[];
+  showError: boolean;
+  setShowError: (value: boolean) => void;
 }
 
-const CreateReviewCourses: React.FC<CreateReviewCoursesProps> = ({
-    selectClassText,
-    selectedClass,
-    setSelectedClass,
-    classes,
-    showError,
-    setShowError,
-}) => {
+const CreateReviewCourses: React.FC<CreateReviewCoursesProps> = memo(
+  ({ selectedCourse, setSelectedCourse, courses, showError, setShowError }) => {
     const intl = useIntl();
+    const courseMap = new Map<string, Course>();
+
+    useEffect(() => {
+      courseMap.clear();
+      courses.forEach((course) => {
+        courseMap.set(course.courseName, course);
+      });
+    });
+
     const textConstants = {
-        courseNotSelectedError: intl.formatMessage({ id: 'courseNotSelectedError' }),
+      courseNotSelectedError: intl.formatMessage({
+        id: "courseNotSelectedError",
+      }),
+      selectClassText: intl.formatMessage({ id: "selectClassText" }),
     };
 
-    const handleSelectChange = (e: { target: { value: string; }; }) => {
-        setSelectedClass(e.target.value as string);
-        setShowError(e.target.value === '');
+    const handleSelectChange = (selectedCourse: string) => {
+      setSelectedCourse(courseMap.get(selectedCourse)!);
+      setShowError(selectedCourse === "");
     };
 
     return (
-        <FormControl fullWidth>
-            <InputLabel id="selected-class-label">{selectClassText}</InputLabel>
-            <Select
-                label={selectClassText}
-                labelId="selected-class-label"
-                value={selectedClass}
-                onChange={handleSelectChange}
-            >
-                <MenuItem value="" disabled>
-                    {selectClassText}
-                </MenuItem>
-                {classes.map((course, index) => (
-                    <MenuItem value={course} key={index}>
-                        {course}
-                    </MenuItem>
-                ))}
-            </Select>
-            {showError && (
-                <Typography variant="body2" sx={{ color: 'red', marginTop: 1 }}>
-                    {textConstants.courseNotSelectedError}
-                </Typography>
-            )}
-        </FormControl>
+      <div className="mb-1">
+        <span id="selected-period-label">{textConstants.selectClassText}</span>
+        <Select
+          value={selectedCourse ? selectedCourse.courseName : ""}
+          onValueChange={handleSelectChange}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={textConstants.selectClassText} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>{textConstants.selectClassText}</SelectLabel>
+              {courses.map((course, index) => (
+                <SelectItem value={course.courseName} key={index}>
+                  {course.courseName}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        {showError && (
+          <span className="mt-2 text-red-500">
+            {textConstants.courseNotSelectedError}
+          </span>
+        )}
+      </div>
     );
-};
+  },
+);
 
 export default CreateReviewCourses;

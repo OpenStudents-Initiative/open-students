@@ -1,57 +1,52 @@
-import React from 'react';
-import FormControl from '@mui/material/FormControl';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
-import { useIntl } from 'react-intl';
+import { useIntl } from "react-intl";
+import { Slider } from "../ui/slider";
+import { useEffect, useState } from "react";
 
 interface CreateReviewObtainedGradeProps {
-    obtainedGradeText: string;
-    obtainedGrade: number;
-    setObtainedGrade: React.Dispatch<React.SetStateAction<number>>;
-    showError: boolean;
-    setShowError: React.Dispatch<React.SetStateAction<boolean>>;
+  obtainedGrade: number;
+  setObtainedGrade: (value: number) => void;
 }
-
 const CreateReviewObtainedGrade = ({
-    obtainedGradeText,
-    obtainedGrade,
-    setObtainedGrade,
-    showError,
-    setShowError,
+  obtainedGrade,
+  setObtainedGrade,
 }: CreateReviewObtainedGradeProps) => {
-    const intl = useIntl();
-    const textConstants = {
-        minimumGradeError: intl.formatMessage({ id: 'minimumGradeError' }),
-    };
+  const intl = useIntl();
+  const textConstants = {
+    minimumGradeError: intl.formatMessage({ id: "minimumGradeError" }),
+    obtainedGradeText: intl.formatMessage({ id: "obtainedGradeText" }),
+  };
+  const handleSliderChange = (value: number | number[]) => {
+    const newValue = Array.isArray(value) ? value[0] : value;
+    setObtainedGrade(newValue);
+  };
 
-    const handleSliderChange = (_e: Event, value: number | number[]) => {
-        const newValue = Array.isArray(value) ? value[0] : value;
-        setObtainedGrade(newValue);
-        setShowError(newValue < 1.5);
-    };
+  const [trackThumbColor, setTrackThumbColor] = useState("");
 
-    return (
-        <FormControl fullWidth>
-            <Slider
-                value={obtainedGrade}
-                min={1.5}
-                max={5}
-                step={0.01}
-                valueLabelDisplay="auto"
-                onChange={handleSliderChange}
-                aria-labelledby="obtained-grade-label"
-                color={obtainedGrade < 3 ? 'error' : obtainedGrade <= 3.6 ? 'warning' : 'success'}
-            />
-            <Typography variant="body2" gutterBottom>
-                {`${obtainedGradeText}: ${obtainedGrade}`}
-            </Typography>
-            {showError && (
-                <Typography variant="body2" sx={{ color: 'red', marginTop: 1 }}>
-                    {textConstants.minimumGradeError}
-                </Typography>
-            )}
-        </FormControl>
-    );
+  useEffect(() => {
+    if (obtainedGrade < 3) {
+      setTrackThumbColor("red");
+    } else if (obtainedGrade < 3.75) {
+      setTrackThumbColor("yellow");
+    } else {
+      setTrackThumbColor("green");
+    }
+  }, [obtainedGrade]);
+
+  return (
+    <div className="mb-2">
+      <Slider
+        value={[obtainedGrade]}
+        defaultValue={[2.5]}
+        min={1.5}
+        max={5}
+        step={0.01}
+        onValueChange={handleSliderChange}
+        classNameTrack={`bg-${trackThumbColor}-500 transition-colors duration-500`}
+        classNameThumb={`border-${trackThumbColor}-500 transition-colors duration-500`}
+      />
+      <span>{`${textConstants.obtainedGradeText}: ${obtainedGrade}`}</span>
+    </div>
+  );
 };
 
 export default CreateReviewObtainedGrade;
