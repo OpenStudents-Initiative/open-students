@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import "../../styles/SearchBar.css";
 import { useIntl } from "react-intl";
 import levensthein from "js-levenshtein";
-import { fetchProfessorsWithKeys } from "../../services/professorService";
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { useRecoilState } from "recoil";
 import { currentNavbarFocus } from "@/atoms/defaultAtoms";
+import { useProfessorService } from "@/contexts/ServiceContext";
 
 interface SearchBarProps {
   results: Array<{ name: string; id: string }>;
@@ -18,6 +18,7 @@ interface SearchBarProps {
 
 const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
   const intl = useIntl();
+  const { fetchProfessorsWithKeys } = useProfessorService();
   const inputElement = useRef<HTMLInputElement>(null);
   const [navbarFocus, setNavbarFocus] = useRecoilState(currentNavbarFocus);
   const searchProfessors = intl.formatMessage({ id: "searchProfessors" });
@@ -28,7 +29,9 @@ const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    fetchAndSetProfessorNames(setProfessorNames);
+    fetchProfessorsWithKeys(["name", "id"]).then((res) =>
+      setProfessorNames(res),
+    );
   }, []);
 
   useEffect(() => {
@@ -72,15 +75,6 @@ const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
 };
 
 export default SearchBar;
-
-async function fetchAndSetProfessorNames(
-  setProfessorNames: React.Dispatch<
-    React.SetStateAction<{ name: string; id: string }[]>
-  >,
-) {
-  const professorNames = await fetchProfessorsWithKeys(["name", "id"]);
-  setProfessorNames(professorNames);
-}
 
 function professorNamesToStrList(
   input: string,

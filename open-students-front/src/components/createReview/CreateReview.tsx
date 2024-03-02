@@ -10,9 +10,6 @@ import CreateReviewPeriods from "./CreateReviewPeriods.tsx";
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 import { CreatedReview } from "../../utils/types.ts";
 import type { Period, Course } from "../../utils/types.ts";
-import { fetchAllPeriods } from "../../services/periodService.ts";
-import { fetchProfessorCourses } from "../../services/professorService.ts";
-import { postReview } from "../../services/reviewService.ts";
 import { compareCourses, comparePeriods } from "../../utils/comparisons.ts";
 import {
   Dialog,
@@ -21,6 +18,11 @@ import {
   DialogTitle,
 } from "../ui/dialog.tsx";
 import { Button } from "../ui/button.tsx";
+import {
+  usePeriodService,
+  useProfessorService,
+  useReviewService,
+} from "@/contexts/ServiceContext.tsx";
 
 interface CreateReviewProps {
   open: boolean;
@@ -35,6 +37,9 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
     writeAReviewFor: intl.formatMessage({ id: "writeAReviewFor" }),
     submitReviewText: intl.formatMessage({ id: "submitReviewText" }),
   };
+  const { fetchProfessorCourses } = useProfessorService();
+  const { fetchAllPeriods } = usePeriodService();
+  const { postReview } = useReviewService();
 
   const [reviewText, setReviewText] = useState("");
   const [professorRating, setProfessorRating] = useState(1);

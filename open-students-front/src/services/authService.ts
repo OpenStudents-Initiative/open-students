@@ -7,7 +7,7 @@ interface AuthResponse {
   userInfo: UserSessionData;
 }
 
-export async function fetchLogin(email: string, password: string) {
+async function fetchLogin(email: string, password: string) {
   try {
     const response = await axios.post(`${apiUrl}/login`, {
       username: email, // No, this is not a bad logic error, standard says to use username key
@@ -19,3 +19,12 @@ export async function fetchLogin(email: string, password: string) {
     return null;
   }
 }
+
+const authService = {
+  fetchLogin,
+};
+
+type AuthService = typeof authService;
+
+export default authService;
+export type { AuthService };
