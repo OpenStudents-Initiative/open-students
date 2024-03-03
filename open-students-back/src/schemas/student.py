@@ -36,3 +36,8 @@ class StudentLogin(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class StudentCredentials(BaseModel):
+    username: str
+    password: str
