@@ -1,5 +1,4 @@
-from pydantic import BaseModel
-from uuid import UUID
+from pydantic import BaseModel, UUID4
 
 
 class UniversityBase(BaseModel):
@@ -7,7 +6,7 @@ class UniversityBase(BaseModel):
 
 
 class University(UniversityBase):
-    id: UUID
+    id: UUID4
     name: str
     nickname: str | None = None
 
