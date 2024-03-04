@@ -4,51 +4,59 @@ import { apiUrl } from "../config";
 
 export async function fetchProfessorsWithKeys(keys: string[]) {
   try {
-    const professors: any[] = (
-      await axios.get(`${apiUrl}/professors`, {
+    const { data } = await axios.get<Partial<Professor[]>>(
+      `${apiUrl}/professors`,
+      {
         params: {
           keys: keys.reduce((acc, current) => acc + "," + current),
         },
-      })
-    ).data;
-    return professors;
+      }
+    );
+
+    return data;
   } catch (e) {
     console.error(`Error fetching professors with keys ${keys}: ${e}`);
-    return [];
+    throw e;
   }
 }
 
-export async function fetchProfessorById(id: string) {
+export async function fetchProfessorById(id: string | undefined) {
+  if (!id) {
+    throw new Error("No id provided");
+  }
   try {
-    const professor: Professor = (await axios.get(`${apiUrl}/professors/${id}`))
-      .data;
-    return professor;
+    const { data } = await axios.get<Professor>(`${apiUrl}/professors/${id}`);
+    return data;
   } catch (e) {
     console.error(`Error fetching professor: ${e}`);
-    return null;
+    throw e;
   }
 }
 
-export async function fetchProfessorReviews(id: string) {
+export async function fetchProfessorReviews(id: string | undefined) {
+  if (!id) {
+    throw new Error("No id provided");
+  }
   try {
-    const reviews: Review[] = (
-      await axios.get(`${apiUrl}/professors/${id}/reviews`)
-    ).data;
-    return reviews;
+    const { data } = await axios.get<Review[]>(
+      `${apiUrl}/professors/${id}/reviews`
+    );
+
+    return data;
   } catch (e) {
     console.error(`Error fetching reviews: ${e}`);
-    return [];
+    throw e;
   }
 }
 
 export async function fetchProfessorCourses(id: string) {
   try {
-    const courses: Course[] = (
-      await axios.get(`${apiUrl}/professors/${id}/courses`)
+    const courses = (
+      await axios.get<Course[]>(`${apiUrl}/professors/${id}/courses`)
     ).data;
     return courses;
   } catch (e) {
     console.error(`Error fetching courses: ${e}`);
-    return [];
+    throw e;
   }
 }

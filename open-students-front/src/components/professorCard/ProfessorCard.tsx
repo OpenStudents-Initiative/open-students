@@ -15,12 +15,12 @@ interface Professor {
 }
 
 interface ProfessorCardProps {
-  professor: Professor;
+  professor: Professor | undefined;
   makeReview: React.MouseEventHandler<HTMLElement>;
 }
 
 const ProfessorCard = ({ professor, makeReview }: ProfessorCardProps) => (
-  <Card className="text-center">
+  <Card className="text-center min-w-[320px] lg:max-w-[320px]">
     <CardHeader>
       <img
         src={professorAvatar}
@@ -31,14 +31,14 @@ const ProfessorCard = ({ professor, makeReview }: ProfessorCardProps) => (
 
     <CardContent>
       <ProfessorCardNameUniversityDependency
-        name={professor.name}
-        university={professor.university}
-        dependency={professor.dependency}
+        name={professor!.name}
+        university={professor!.university}
+        dependency={professor!.dependency}
       />
       <ProfessorCardRatingGradeDifficulty
-        rating={professor.averageRating}
-        grade={professor.averageCourseGrade}
-        difficulty={professor.averageDifficultyLevel}
+        rating={professor!.averageRating}
+        grade={professor!.averageCourseGrade}
+        difficulty={professor!.averageDifficultyLevel}
       />
       <ProfessorCardCreateReviewButton makeReview={makeReview} />
     </CardContent>

@@ -11,14 +11,11 @@ import {
   PROFILE_ROUTE,
 } from "./utils/consts.ts";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
-import { useRecoilValue } from "recoil";
-import { currentProfessorIdState } from "./atoms/defaultAtoms.ts";
 import LandingPage from "./pages/LandingPage.tsx";
 
 export default function App() {
   const isAuthenticated = useIsAuthenticated();
   const authenticated = isAuthenticated();
-  const currentProfessorId = useRecoilValue(currentProfessorIdState);
 
   return (
     <div className="App">
@@ -26,14 +23,14 @@ export default function App() {
       <ScrollToTop />
       <div className="p-4">
         <Routes>
-          <Route
-            path="/"
-            element={currentProfessorId ? <ProfessorPage /> : <LandingPage />}
-          />
+          <Route path="/" element={<LandingPage />} />
           <Route path={AUTH_ROUTE} element={<AuthPage />} />
           {authenticated && (
             <>
-              <Route path={PROFESSORS_ROUTE} element={<ProfessorPage />} />
+              <Route
+                path={`${PROFESSORS_ROUTE}/:id`}
+                element={<ProfessorPage />}
+              />
               <Route path={AUTH_ROUTE} element={<Redirect />} />
               <Route path={PROFILE_ROUTE} element={<div>Profile page</div>} />
             </>
