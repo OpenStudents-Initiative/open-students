@@ -6,5 +6,11 @@ from src.models.base import Base
 class University(Base):
     __tablename__ = "university"
 
+    name = Column(String, nullable=False, unique=True)
     nickname = Column(String)
-    name = Column(String, nullable=False)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name

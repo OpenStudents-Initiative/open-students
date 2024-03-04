@@ -7,7 +7,6 @@ import Rating from "../ui/rating.tsx";
 interface Review {
   id: string;
   course: string;
-  code: string;
   period: string;
   createdAt: string;
   review: string;
@@ -37,7 +36,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <p className="text-left max-w-3/4 font-semibold">
-            {`${review.code}: ${review.course}`}
+            {`${review.course}`}
           </p>
           <p className="text-right font-semibold">
             {`${textConstants.semesterText}: ${review.period}`}

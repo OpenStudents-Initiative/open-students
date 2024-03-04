@@ -20,10 +20,8 @@ export default function AuthPage() {
     event.preventDefault();
     const responseData = await fetchLogin(email, password);
 
-    if (!responseData) {
-      setError(
-        "There has been a problem with the login endpoint, please try again later"
-      );
+    if ("detail" in responseData) {
+      setError(responseData.detail);
       return;
     }
 
@@ -37,6 +35,7 @@ export default function AuthPage() {
       })
     ) {
       navigate(HOME_ROUTE);
+      window.location.reload();
     } else {
       setError("Login is invalid");
     }

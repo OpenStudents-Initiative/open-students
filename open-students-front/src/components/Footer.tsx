@@ -5,8 +5,10 @@ export default function Footer() {
   const footerText = intl.formatMessage({ id: "footerText" });
 
   return (
-    <footer className="bg-primary fixed bottom-0 w-full h-6 flex items-center justify-center">
-      <span className="text-primary-foreground text-sm">{footerText}</span>
+    <footer className="bg-primary fixed bottom-0 w-full h-auto flex items-center justify-center">
+      <span className="text-primary-foreground text-center text-sm">
+        {footerText}
+      </span>
     </footer>
   );
 }

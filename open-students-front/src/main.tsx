@@ -11,6 +11,7 @@ import createAuthStore from "react-auth-kit/createStore";
 import { runningInProd } from "./config.ts";
 import AuthProvider from "react-auth-kit/AuthProvider";
 import { UserSessionData } from "./utils/types.ts";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const authStore = createAuthStore<UserSessionData>({
   authName: "_auth",
@@ -31,16 +32,20 @@ function getMessages(lang: string) {
   }
 }
 
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <RecoilRoot>
-      <AuthProvider store={authStore}>
-        <BrowserRouter>
-          <IntlProvider locale={lang} messages={messages}>
-            <App />
-          </IntlProvider>
-        </BrowserRouter>
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider store={authStore}>
+          <BrowserRouter>
+            <IntlProvider locale={lang} messages={messages}>
+              <App />
+            </IntlProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </QueryClientProvider>
     </RecoilRoot>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

@@ -10,13 +10,21 @@ import { currentNavbarFocus } from "@/atoms/defaultAtoms";
 
 interface SearchBarProps {
   results: Array<{ name: string; id: string }>;
+  input: string;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
   setResults: React.Dispatch<
     React.SetStateAction<{ name: string; id: string }[]>
   >;
   setShowResults: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
+const SearchBar = ({
+  results,
+  setResults,
+  setShowResults,
+  input,
+  setInput,
+}: SearchBarProps) => {
   const intl = useIntl();
   const inputElement = useRef<HTMLInputElement>(null);
   const [navbarFocus, setNavbarFocus] = useRecoilState(currentNavbarFocus);
@@ -25,7 +33,6 @@ const SearchBar = ({ results, setResults, setShowResults }: SearchBarProps) => {
   const [professorNames, setProfessorNames] = useState<
     { name: string; id: string }[]
   >([]);
-  const [input, setInput] = useState("");
 
   useEffect(() => {
     fetchAndSetProfessorNames(setProfessorNames);
@@ -76,15 +83,22 @@ export default SearchBar;
 async function fetchAndSetProfessorNames(
   setProfessorNames: React.Dispatch<
     React.SetStateAction<{ name: string; id: string }[]>
-  >,
+  >
 ) {
-  const professorNames = await fetchProfessorsWithKeys(["name", "id"]);
+  const professorNames = (await fetchProfessorsWithKeys([
+    "name",
+    "id",
+  ])) as unknown as {
+    name: string;
+    id: string;
+  }[];
+
   setProfessorNames(professorNames);
 }
 
 function professorNamesToStrList(
   input: string,
-  professorNames: { name: string; id: string }[],
+  professorNames: { name: string; id: string }[]
 ) {
   const sortedProfNames: { name: string; id: string }[] = professorNames
     .map((value) => {
@@ -99,7 +113,6 @@ function professorNamesToStrList(
     })
     .sort((a, b) => a.score - b.score)
     .map((value) => {
-      console.log(value);
       return { name: value.name, id: value.id };
     })
     .slice(0, 5);

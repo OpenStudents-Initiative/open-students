@@ -1,17 +1,16 @@
-import { SetterOrUpdater } from "recoil";
 import "../../styles/SearchResultsList.css";
 import { SearchResult } from "./SearchResult";
 
 interface SearchResultsListProps {
   results: Array<{ name: string; id: string }>;
-  setCurrentProfessorId: SetterOrUpdater<string>;
   setShowResults: React.Dispatch<React.SetStateAction<boolean>>;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const SearchResultsList = ({
   results,
-  setCurrentProfessorId,
   setShowResults,
+  setInput,
 }: SearchResultsListProps) => {
   if (results.length === 0) {
     return null;
@@ -24,8 +23,8 @@ export const SearchResultsList = ({
           <SearchResult
             result={result}
             key={id}
-            setCurrentProfessorId={setCurrentProfessorId}
             setShowResults={setShowResults}
+            setInput={setInput}
           />
         );
       })}

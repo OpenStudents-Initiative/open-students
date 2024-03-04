@@ -3,8 +3,6 @@ import SearchBar from "./searchBar/SearchBar";
 import { SearchResultsList } from "./searchBar/SearchResultsList";
 import { useState } from "react";
 import { Link, NavigateFunction, useNavigate } from "react-router-dom";
-import { SetterOrUpdater, useSetRecoilState } from "recoil";
-import { currentProfessorIdState } from "../atoms/defaultAtoms";
 import { AUTH_ROUTE, HOME_ROUTE, PROFILE_ROUTE } from "../utils/consts";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useSignOut from "react-auth-kit/hooks/useSignOut";
@@ -21,7 +19,6 @@ export default function NavBar() {
   const userAuthenticated = useIsAuthenticated()();
   const signOut = useSignOut();
   const navigate = useNavigate();
-  const setCurrentProfessorId = useSetRecoilState(currentProfessorIdState);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -39,13 +36,16 @@ export default function NavBar() {
   const text = userAuthenticated ? textConstants.account : textConstants.login;
   const [results, setResults] = useState<{ name: string; id: string }[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [input, setInput] = useState("");
 
   return (
     <nav className="bg-background flex justify-between items-center p-4 shadow-md sticky top-0 right-0 left-0 z-50">
-      <LogoOpenStudents />
+      <LogoOpenStudents setInput={setInput} />
       {userAuthenticated && (
         <>
           <SearchBar
+            input={input}
+            setInput={setInput}
             results={results}
             setResults={setResults}
             setShowResults={setShowResults}
@@ -53,7 +53,7 @@ export default function NavBar() {
           {showResults && (
             <SearchResultsList
               results={results}
-              setCurrentProfessorId={setCurrentProfessorId}
+              setInput={setInput}
               setShowResults={setShowResults}
             />
           )}
@@ -64,21 +64,25 @@ export default function NavBar() {
         navigate={navigate}
         anchorEl={anchorEl}
         signOut={signOut}
-        setCurrentProfessorId={setCurrentProfessorId}
         userAuthenticated={userAuthenticated}
         handleMenu={handleMenu}
         handleClose={handleClose}
         intl={intl}
+        setInput={setInput}
       />
     </nav>
   );
 }
 
-const LogoOpenStudents = () => (
-  <Link to={HOME_ROUTE}>
+interface LogoOpenStudentsProps {
+  setInput: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const LogoOpenStudents = ({ setInput }: LogoOpenStudentsProps) => (
+  <Link to={HOME_ROUTE} onClick={() => setInput("")}>
     <img
       className="h-8"
-      src="openstudents-high-resolution-logo-transparent.png"
+      src="/openstudents-high-resolution-logo-transparent.png"
       alt="Logo Open Students"
     />
   </Link>
@@ -91,16 +95,17 @@ const LoginButton = ({
   signOut,
   handleClose,
   intl,
+  setInput,
 }: {
   text: string | undefined;
   navigate: NavigateFunction;
   userAuthenticated: boolean;
   anchorEl: HTMLElement | null;
   signOut: () => void;
-  setCurrentProfessorId: SetterOrUpdater<string>;
   handleMenu: (event: React.MouseEvent<HTMLElement>) => void;
   handleClose: () => void;
   intl: IntlShape;
+  setInput: React.Dispatch<React.SetStateAction<string>>;
 }) => (
   <>
     {!userAuthenticated ? (
@@ -119,6 +124,7 @@ const LoginButton = ({
         <DropdownMenuContent>
           <DropdownMenuItem
             onClick={() => {
+              setInput("");
               navigate(PROFILE_ROUTE);
               handleClose();
             }}
