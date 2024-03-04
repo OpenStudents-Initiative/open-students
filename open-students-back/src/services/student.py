@@ -4,14 +4,29 @@ from src.services.crud.base import CRUDBase
 from src.schemas.student import StudentCreate, StudentUpdate, StudentLogin
 from src.schemas.student import Student as StudentSchema
 from src.models.student import Student
+import jwt
+from datetime import datetime, timedelta
+from src.config.settings import Settings
 
-TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE3MDc5MjUwMDgsImV4cCI6MTczOTQ2MTAwOCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.Pr24VsJ0XpVUgZ_o1mSNWiJK7J811XfrhiMqRkkbPcQ"
+settings = Settings()
 
 
 class CRUDStudent(CRUDBase[Student, StudentCreate, StudentUpdate]):
-    # TODO: Implement password hashing
     def hashed_password(self, password: str) -> str:
         return password
+
+    def generate_token(self, student: StudentSchema) -> str:
+        payload = {
+            "id": str(student.id),
+            "email": student.email,
+            "exp": datetime.utcnow() + timedelta(days=1),
+        }
+
+        token = jwt.encode(
+            payload=payload, key=settings.SECRET_KEY, algorithm=settings.ALGORITHM
+        )
+
+        return token
 
     def login(self, db: Session, email: str, password: str):
         db_student = (
@@ -34,8 +49,8 @@ class CRUDStudent(CRUDBase[Student, StudentCreate, StudentUpdate]):
             fk_university=db_student.fk_university,
         )
 
-        # TODO: Implement token generation
-        return StudentLogin(token=TOKEN, userInfo=student)
+        token = self.generate_token(student)
+        return StudentLogin(token=token, userInfo=student)
 
 
 student_service = CRUDStudent(Student)

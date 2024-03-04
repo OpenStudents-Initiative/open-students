@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME")
     ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD")
     SECRET_KEY: str = os.getenv("SECRET_KEY")
+    ALGORITHM: str = os.getenv("ALGORITHM")
 
     class Config:
         case_sensitive = True

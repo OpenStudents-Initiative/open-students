@@ -4,7 +4,7 @@ from src.api.api_v1.endpoints import (
     academic_period,
     professor,
     login,
-    # review, TODO: Implement review creation
+    review,
     university,
     root,
 )
@@ -20,3 +20,4 @@ api_router.include_router(
     academic_period.router, prefix="/periods", tags=["academic_period"]
 )
 api_router.include_router(login.router, prefix="/login", tags=["login"])
+api_router.include_router(review.router, prefix="/reviews", tags=["review"])
