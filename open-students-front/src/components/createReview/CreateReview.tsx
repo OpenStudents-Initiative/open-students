@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useIntl } from "react-intl";
 import CreateReviewTextField from "./CreateReviewTextField.tsx";
 import CreateReviewRating from "./CreateReviewRating.tsx";
@@ -9,11 +9,11 @@ import CreateReviewCourses from "./CreateReviewCourses.tsx";
 import CreateReviewPeriods from "./CreateReviewPeriods.tsx";
 import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 import { CreatedReview } from "../../utils/types.ts";
-import type { Period, Course } from "../../utils/types.ts";
+import type { Period, Course, ApiResponse, Review } from "../../utils/types.ts";
 import { fetchAllPeriods } from "../../services/periodService.ts";
 import { fetchProfessorCourses } from "../../services/professorService.ts";
 import { postReview } from "../../services/reviewService.ts";
-import { compareCourses, comparePeriods } from "../../utils/comparisons.ts";
+import { comparePeriods } from "../../utils/comparisons.ts";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "../ui/dialog.tsx";
 import { Button } from "../ui/button.tsx";
+import { useQuery, useQueryClient, useMutation } from "react-query";
 
 interface CreateReviewProps {
   open: boolean;
@@ -31,6 +32,7 @@ interface CreateReviewProps {
 const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
   const intl = useIntl();
   const authHeader = useAuthHeader();
+  const queryClient = useQueryClient();
   const textConstants = {
     writeAReviewFor: intl.formatMessage({ id: "writeAReviewFor" }),
     submitReviewText: intl.formatMessage({ id: "submitReviewText" }),
@@ -48,42 +50,44 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
   const [showCourseError, setShowCourseError] = useState(false);
   const [showPeriodError, setShowPeriodError] = useState(false);
 
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [periods, setPeriods] = useState<Period[]>([]);
+  const {
+    data: courses,
+    isLoading: isLoadingCourses,
+    error: coursesError,
+  } = useQuery(["courses", professor.id], () =>
+    fetchProfessorCourses(professor.id)
+  );
 
-  useEffect(() => {
-    async function fetchData() {
-      const courses: Course[] = await fetchProfessorCourses(professor.id);
-      courses.sort(compareCourses);
-      setCourses(courses);
-
-      const periods: Period[] = await fetchAllPeriods();
-      periods.sort(comparePeriods);
-      setPeriods(periods);
-    }
-
-    if (professor.id) {
-      fetchData();
-    }
-  }, [professor.id]);
-
-  const isThereFormErrors = () => {
-    return showTextFieldError || showCourseError || showPeriodError;
-  };
+  const {
+    data: periods,
+    isLoading: isLoadingPeriods,
+    error: periodsError,
+  } = useQuery("periods", fetchAllPeriods, {
+    select: (data) => data.sort(comparePeriods),
+  });
 
   const createReviewObject = (professor: { id: string }) => {
     return {
+      professor: professor.id,
       course: selectedCourse!.id,
-      code: selectedCourse!.code,
-      period: selectedPeriod!.id,
+      academicPeriod: selectedPeriod!.id,
       review: reviewText,
       generalRating: professorRating,
       difficultyLevel: difficultyRating,
       courseGrade: obtainedGrade,
       wouldEnrollAgain: wouldTakeAgain,
-      professorId: professor.id,
     };
   };
+
+  const reviewMutation = useMutation<ApiResponse<Review>, Error, CreatedReview>(
+    (review) =>
+      postReview(review, authHeader!).then((response) => response.data),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["reviews", professor.id]);
+      },
+    }
+  );
   const handleReviewSubmit = async () => {
     if (!selectedCourse || !selectedPeriod) {
       setShowCourseError(!selectedCourse);
@@ -91,16 +95,28 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
       return;
     }
 
-    const reviewObject: CreatedReview = createReviewObject(professor);
+    const reviewObject = createReviewObject(professor);
+    await reviewMutation.mutateAsync(reviewObject);
 
-    if (authHeader) {
-      postReview(reviewObject, authHeader);
-    } else {
-      console.error("User tried to post a review, but user is not logged in?");
+    if (!reviewMutation.isError) {
+      setOpen(false);
     }
-
-    if (!isThereFormErrors()) setOpen(false);
   };
+  if (isLoadingCourses || isLoadingPeriods) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Loading</p>
+      </div>
+    );
+  }
+
+  if (coursesError || periodsError) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Error</p>
+      </div>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -132,14 +148,14 @@ const CreateReview = ({ open, setOpen, professor }: CreateReviewProps) => {
             setObtainedGrade={setObtainedGrade}
           />
           <CreateReviewCourses
-            courses={courses}
+            courses={courses!}
             selectedCourse={selectedCourse}
             setSelectedCourse={setSelectedCourse}
             showError={showCourseError}
             setShowError={setShowCourseError}
           />
           <CreateReviewPeriods
-            periods={periods}
+            periods={periods!}
             selectedPeriod={selectedPeriod}
             setSelectedPeriod={setSelectedPeriod}
             showError={showPeriodError}

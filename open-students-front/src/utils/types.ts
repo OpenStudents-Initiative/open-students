@@ -1,6 +1,7 @@
 export interface UserSessionData {
-  uuid: string;
+  id: string;
   name: string;
+  nickname: string;
   email: string;
 }
 
@@ -29,14 +30,13 @@ export interface Review {
 
 export interface CreatedReview {
   course: string;
-  code: string;
-  period: string;
+  academicPeriod: string;
   review: string;
   generalRating: number;
   difficultyLevel: number;
   courseGrade: number;
   wouldEnrollAgain: boolean;
-  professorId: string;
+  professor: string;
 }
 
 export interface Period {
@@ -46,7 +46,10 @@ export interface Period {
 
 export interface Course {
   id: string;
-  professorId: string;
-  code: string;
+  number: number;
   courseName: string;
+}
+
+export interface ApiResponse<T> {
+  data: T;
 }

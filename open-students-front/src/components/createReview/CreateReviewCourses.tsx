@@ -71,7 +71,7 @@ const CreateReviewCourses: React.FC<CreateReviewCoursesProps> = memo(
         )}
       </div>
     );
-  },
+  }
 );
 
 export default CreateReviewCourses;

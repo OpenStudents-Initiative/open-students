@@ -113,7 +113,6 @@ function professorNamesToStrList(
     })
     .sort((a, b) => a.score - b.score)
     .map((value) => {
-      console.log(value);
       return { name: value.name, id: value.id };
     })
     .slice(0, 5);
