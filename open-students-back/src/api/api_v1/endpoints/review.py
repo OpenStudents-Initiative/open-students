@@ -1,11 +1,12 @@
-from fastapi import Depends, APIRouter, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from src.schemas.review import ReviewCreate, Review
+import jwt
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
-from src.services.review import review_service
+
 from src.config.db_config import get_db
 from src.config.settings import Settings
-import jwt
+from src.schemas.review import Review, ReviewCreate
+from src.services.review import review_service
 
 settings = Settings()
 
@@ -16,9 +17,8 @@ router = APIRouter()
 def get_user_id_from_token(
     token: HTTPAuthorizationCredentials = Depends(security),
 ):
+    INVALID_CREDENTIALS = "Invalid authentication credentials"
     try:
-        INVALID_CREDENTIALS = "Invalid authentication credentials"
-
         if token:
             jwt_token = token.credentials
             payload = jwt.decode(
@@ -46,4 +46,4 @@ def create_review(
     db: Session = Depends(get_db),
     creator: str = Depends(get_user_id_from_token),
 ):
-    return review_service.create(db, obj_in=review, creator=creator)
+    return review_service.create_with_creator(db, obj_in=review, creator=creator)

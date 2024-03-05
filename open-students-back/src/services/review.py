@@ -1,14 +1,17 @@
-from sqlalchemy.orm import Session
-from src.services.crud.base import CRUDBase
-from src.schemas.review import ReviewCreate, ReviewUpdate
-from src.models.review import Review
-from src.schemas.review import Review as ReviewSchema
 from datetime import datetime
 
+from sqlalchemy.orm import Session
 
-class CRUDReview(CRUDBase[Review, ReviewCreate, ReviewUpdate]):
-    def create(self, db: Session, *, obj_in: ReviewCreate, creator: str) -> Review:
-        db_obj = Review(
+from src.models.review import Review as ReviewModel
+from src.schemas.review import Review, ReviewCreate, ReviewUpdate
+from src.services.crud.base import CRUDBase
+
+
+class CRUDReview(CRUDBase[ReviewModel, Review, ReviewCreate, ReviewUpdate]):
+    def create_with_creator(
+        self, db: Session, *, obj_in: ReviewCreate, creator: str
+    ) -> ReviewModel:
+        db_obj = ReviewModel(
             fk_professor=obj_in.professor,
             fk_creator=creator,
             fk_academic_period=obj_in.academicPeriod,
@@ -23,7 +26,7 @@ class CRUDReview(CRUDBase[Review, ReviewCreate, ReviewUpdate]):
         db.commit()
         db.refresh(db_obj)
 
-        return ReviewSchema(
+        return ReviewModel(
             id=db_obj.id,
             course=db_obj.course.name,
             period=db_obj.academic_period.name,
@@ -40,4 +43,4 @@ class CRUDReview(CRUDBase[Review, ReviewCreate, ReviewUpdate]):
         )
 
 
-review_service = CRUDReview(Review)
+review_service = CRUDReview(ReviewModel, Review)

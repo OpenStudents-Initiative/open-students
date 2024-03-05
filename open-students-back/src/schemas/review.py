@@ -1,4 +1,6 @@
-from pydantic import BaseModel, UUID4, Field, constr
+from typing import Annotated
+
+from pydantic import UUID4, BaseModel, Field, StringConstraints
 
 
 class ReviewBase(BaseModel):
@@ -9,7 +11,7 @@ class ReviewCreate(BaseModel):
     professor: UUID4
     course: UUID4
     academicPeriod: UUID4
-    review: constr(max_length=500)  # type: ignore
+    review: Annotated[str, StringConstraints(max_length=500)]
     generalRating: float = Field(..., ge=0, le=5)  # Ensures rating is between 0 and 5
     difficultyLevel: float = Field(..., ge=1, le=5)  # Ensures rating is between 1 and 5
     courseGrade: float = Field(..., ge=0, le=5)  # Ensures grade is between 0 and 5
@@ -32,7 +34,7 @@ class ReviewCreate(BaseModel):
 
 
 class ReviewUpdate(BaseModel):
-    review: constr(max_length=500)  # type: ignore
+    review: Annotated[str, StringConstraints(max_length=500)]
     generalRating: float = Field(..., ge=0, le=5)  # Ensures rating is between 0 and 5
     difficultyLevel: float = Field(..., ge=1, le=5)  # Ensures rating is between 1 and 5
     courseGrade: float = Field(..., ge=0, le=5)  # Ensures grade is between 0 and 5

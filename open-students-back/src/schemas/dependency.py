@@ -1,8 +1,13 @@
-from pydantic import BaseModel, UUID4, Field
+from pydantic import BaseModel
 
 
 class DependencyBase(BaseModel):
     pass
+
+
+class Dependency(DependencyBase):
+    name: str
+    abbreviation: str
 
 
 class DependencyCreate(DependencyBase):

@@ -1,14 +1,14 @@
 # professor.py
-from sqlalchemy import Column, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import String
+from sqlalchemy.orm import mapped_column, relationship
+
 from src.models.base import Base
-from sqlalchemy.dialects.postgresql import UUID
 
 
 class Professor(Base):
     __tablename__ = "professor"
 
-    name = Column(String, nullable=False)
+    name = mapped_column(String, nullable=False)
 
     dependencies = relationship(
         "Dependency", back_populates="professors", secondary="professor_dependency"

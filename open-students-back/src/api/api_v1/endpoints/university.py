@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends
-from src.schemas.university import University, UniversityCreate, UniversityUpdate
-from src.services.university import university_service
-from sqlalchemy.orm import Session
-from src.config.db_config import get_db
 from uuid import UUID
 
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from src.config.db_config import get_db
+from src.schemas.university import University, UniversityCreate, UniversityUpdate
+from src.services.university import university_service
 
 router = APIRouter()
 
@@ -15,7 +16,7 @@ async def read_university(db: Session = Depends(get_db)):
 
 
 @router.get("/{university_id}")
-async def read_university(university_id: UUID, db: Session = Depends(get_db)):
+async def read_university_by_id(university_id: UUID, db: Session = Depends(get_db)):
     return university_service.get(db=db, id=university_id)
 
 

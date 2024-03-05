@@ -1,13 +1,18 @@
-from sqlalchemy.orm import Session
+from src.models.academic_period import AcademicPeriod as AcademicPeriodModel
+from src.schemas.academic_period import (
+    AcademicPeriod,
+    AcademicPeriodCreate,
+    AcademicPeriodUpdate,
+)
 from src.services.crud.base import CRUDBase
-from src.schemas.academic_period import AcademicPeriodCreate, AcademicPeriodUpdate
-from src.models.academic_period import AcademicPeriod
 
 
 class CRUDAcademicPeriod(
-    CRUDBase[AcademicPeriod, AcademicPeriodCreate, AcademicPeriodUpdate]
+    CRUDBase[
+        AcademicPeriodModel, AcademicPeriod, AcademicPeriodCreate, AcademicPeriodUpdate
+    ]
 ):
     pass
 
 
-academic_period_service = CRUDAcademicPeriod(AcademicPeriod)
+academic_period_service = CRUDAcademicPeriod(AcademicPeriodModel, AcademicPeriod)

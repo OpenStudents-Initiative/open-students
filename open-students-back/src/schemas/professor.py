@@ -1,6 +1,4 @@
-from pydantic import BaseModel, UUID4, Field
-from .university import UniversityCreate
-from .dependency import DependencyCreate
+from pydantic import UUID4, BaseModel
 
 
 class ProfessorBase(BaseModel):

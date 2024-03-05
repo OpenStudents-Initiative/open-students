@@ -1,11 +1,12 @@
-from sqlalchemy.orm import Session
+from src.models.university import University as UniversityModel
+from src.schemas.university import University, UniversityCreate, UniversityUpdate
 from src.services.crud.base import CRUDBase
-from src.schemas.university import UniversityCreate, UniversityUpdate
-from src.models.university import University
 
 
-class CRUDUniversity(CRUDBase[University, UniversityCreate, UniversityUpdate]):
+class CRUDUniversity(
+    CRUDBase[UniversityModel, University, UniversityCreate, UniversityUpdate]
+):
     pass
 
 
-university_service = CRUDUniversity(University)
+university_service = CRUDUniversity(UniversityModel, University)

@@ -1,5 +1,6 @@
-from pydantic import BaseModel, UUID4
 from datetime import date
+
+from pydantic import UUID4, BaseModel
 
 
 class AcademicPeriodBase(BaseModel):
@@ -9,6 +10,8 @@ class AcademicPeriodBase(BaseModel):
 class AcademicPeriod(AcademicPeriodBase):
     id: UUID4
     name: str
+    start_date: date
+    end_date: date
 
     class Config:
         orm_mode = True
